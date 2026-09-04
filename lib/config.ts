@@ -19,6 +19,14 @@ export const DEFAULT_NOTES_ES_URL =
   "https://ai-assistants-ffcafb.es.us-east-1.aws.elastic.cloud";
 export const NOTES_INDEX = "surgical-capd-notes";
 
+/** Elastic Security Serverless project for SIEM / unusual access. */
+export const DEFAULT_SECURITY_KIBANA_URL =
+  "https://my-security-project-ac9463.kb.us-central1.gcp.elastic.cloud";
+export const DEFAULT_SECURITY_ES_URL =
+  "https://my-security-project-ac9463.es.us-central1.gcp.elastic.cloud";
+export const SECURITY_LOGS_STREAM = "logs-vincari.security-default";
+export const SECURITY_RULE_ID = "surgical-capd-billing-ehr-read";
+
 export function getElasticConfig() {
   const esUrl = (
     process.env.ELASTICSEARCH_URL ||
@@ -52,6 +60,30 @@ export function getNotesConfig() {
 
 export function isNotesConfigured() {
   const { esUrl, apiKey } = getNotesConfig();
+  return Boolean(esUrl && apiKey);
+}
+
+export function getSecurityConfig() {
+  const esUrl = (
+    process.env.SECURITY_ELASTICSEARCH_URL ||
+    process.env.SECURITY_ES_URL ||
+    DEFAULT_SECURITY_ES_URL
+  ).replace(/\/$/, "");
+  const apiKey =
+    process.env.SECURITY_ELASTICSEARCH_API_KEY ||
+    process.env.SECURITY_API_KEY ||
+    process.env.SECURITY_KIBANA_API_KEY ||
+    "";
+  const kibanaUrl = (
+    process.env.SECURITY_KIBANA_URL ||
+    process.env.NEXT_PUBLIC_SECURITY_KIBANA_URL ||
+    DEFAULT_SECURITY_KIBANA_URL
+  ).replace(/\/$/, "");
+  return { esUrl, apiKey, kibanaUrl };
+}
+
+export function isSecurityConfigured() {
+  const { esUrl, apiKey } = getSecurityConfig();
   return Boolean(esUrl && apiKey);
 }
 

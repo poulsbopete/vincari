@@ -16,8 +16,9 @@ export default function HomePage() {
           computer-assisted physician documentation for the OR, in the Microsoft
           Cloud for Healthcare family. Elastic Observability (plus Search,
           Security, and LLM observability) covers Patient Engagement, Virtual
-          Health, Clinical Insights, and AI Assistance. Each card writes
-          telemetry into otel-demo and deep-links to Kibana.
+          Health, Clinical Insights, and AI Assistance. Telemetry goes to
+          otel-demo, signed notes can go to the AI Assistants search project,
+          and unusual EHR access is a Security Serverless SIEM scenario.
         </p>
       </div>
       <SolutionsMap />

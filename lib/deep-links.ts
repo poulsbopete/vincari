@@ -138,6 +138,26 @@ export function kibanaNotesDiscoverUrl(
   return kibanaDiscoverUrl(notesKibanaBase, { query });
 }
 
+export function kibanaSecurityAlertsUrl(kibanaBase: string) {
+  return `${kibanaBase.replace(/\/$/, "")}/app/security/alerts`;
+}
+
+export function kibanaSecurityRulesUrl(kibanaBase: string) {
+  return `${kibanaBase.replace(/\/$/, "")}/app/security/rules`;
+}
+
+export function kibanaSecurityDiscoverUrl(kibanaBase: string) {
+  return kibanaDiscoverUrl(kibanaBase, {
+    query: [
+      "FROM logs-*",
+      '| WHERE event.dataset == "vincari.security"',
+      "| SORT @timestamp DESC",
+      "| KEEP @timestamp, user.name, event.action, url.path, labels.case_id, labels.mrn, source.ip, message",
+      "| LIMIT 50",
+    ].join(" "),
+  });
+}
+
 export function kibanaStreamsUrl(kibanaBase: string) {
   return `${kibanaBase.replace(/\/$/, "")}/app/streams`;
 }

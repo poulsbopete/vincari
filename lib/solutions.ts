@@ -85,14 +85,15 @@ export const CAPABILITIES: Capability[] = [
       "Unify data from different systems into one patient view using Azure Health Data Services and FHIR.",
     href: "/insights",
     serviceName: "vincari-fhir",
-    elasticProducts: ["Observability", "Search"],
+    elasticProducts: ["Observability", "Search", "Security"],
     elasticHow:
-      "ES|QL correlates FHIR Patient, Encounter, and DocumentReference pipeline health from AHDS and the EHR. Observability traces bundle assemble latency; Elasticsearch can search clinical documents sitting beside the FHIR store.",
+      "ES|QL correlates FHIR Patient, Encounter, and DocumentReference pipeline health from AHDS and the EHR. Observability traces bundle assemble latency; Elasticsearch can search clinical documents sitting beside the FHIR store. Elastic Security watches who is reading those Patients — a billing service account pulling the OR board is a SIEM finding, not an APM timeout.",
     signals: [
       "fhir.patient.read",
       "fhir.bundle.assemble",
       "ahds.export lag",
       "document.search",
+      "unusual EHR access (SIEM)",
     ],
     demoAction: "Assemble unified FHIR view",
   },
