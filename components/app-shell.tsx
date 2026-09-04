@@ -3,7 +3,7 @@ import { Activity, Stethoscope } from "lucide-react";
 
 const NAV = [
   { href: "/", label: "Capabilities" },
-  { href: "/or", label: "OR / CAPD" },
+  { href: "/or", label: "Surgical CAPD" },
   { href: "/ops", label: "Observability" },
   { href: "/about", label: "Lineage" },
 ];
@@ -26,10 +26,10 @@ export function AppShell({
             </span>
             <span>
               <span className="block text-sm font-semibold tracking-tight">
-                Vincari
+                Surgical CAPD
               </span>
               <span className="block text-[11px] text-muted-foreground">
-                Surgical CAPD · Cloud for Healthcare
+                Microsoft Cloud for Healthcare
               </span>
             </span>
           </Link>

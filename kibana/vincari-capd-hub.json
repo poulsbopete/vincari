@@ -1,13 +1,13 @@
 {
-  "title": "Vincari CAPD — hub",
+  "title": "Surgical CAPD — hub",
   "panels": [
     {
       "type": "markdown",
       "uid": "vincari-intro",
       "grid": { "x": 0, "y": 0, "w": 48, "h": 14 },
       "config": {
-        "title": "Vincari surgical CAPD",
-        "content": "## Vincari CAPD demo\n\nSurgical computer-assisted physician documentation telemetry (`service.name: vincari-capd`) in this Serverless Observability project.\n\n### App\n\nOpen the Vercel demo, sign an operative note, then return here via Discover / APM deep links.\n\n### ES|QL\n\n```esql\nFROM logs-*\n| WHERE service.name == \"vincari-capd\"\n| SORT @timestamp DESC\n| LIMIT 50\n```\n\n---\n*Unaffiliated demo. Not a Microsoft / Nuance / Vincari product.*"
+        "title": "Surgical CAPD",
+        "content": "## Surgical CAPD demo\n\nSurgical computer-assisted physician documentation telemetry (`service.name: vincari-capd`) in this Serverless Observability project.\n\n### App\n\nOpen the Vercel demo, sign an operative note, then return here via Discover / APM deep links.\n\n### ES|QL\n\n```esql\nFROM logs-*\n| WHERE service.name == \"vincari-capd\"\n| SORT @timestamp DESC\n| LIMIT 50\n```\n\n---\n*Unaffiliated demo. Surgical CAPD is the product name; Vincari is historical lineage.*"
       }
     }
   ],

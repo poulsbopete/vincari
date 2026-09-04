@@ -100,7 +100,7 @@ export const CAPABILITIES: Capability[] = [
     id: "ai-assistance",
     msTitle: "AI Assistance",
     msSummary:
-      "Streamline clinical notes and tasks with Dragon Copilot, Microsoft Fabric, and Vincari-lineage CAPD.",
+      "Streamline clinical notes and tasks with Surgical CAPD, Dragon Copilot, and Microsoft Fabric.",
     href: "/or",
     serviceName: "vincari-capd",
     elasticProducts: ["LLM observability", "Observability"],
@@ -112,7 +112,7 @@ export const CAPABILITIES: Capability[] = [
       "ehr.pull errors",
       "fabric.pipeline",
     ],
-    demoAction: "Sign a CAPD operative note",
+    demoAction: "Sign a Surgical CAPD operative note",
   },
 ];
 

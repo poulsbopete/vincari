@@ -10,17 +10,18 @@ export default function AboutPage() {
             Demo context
           </p>
           <h1 className="mt-2 text-3xl font-semibold tracking-tight">
-            Vincari, Nuance, and Microsoft Cloud for Healthcare
+            Surgical CAPD in Microsoft Cloud for Healthcare
           </h1>
           <p className="mt-3 text-sm text-muted-foreground">
             This application is an unaffiliated technical demonstration of
-            surgical CAPD workflow observability. It is not a Microsoft, Nuance,
-            or Vincari product.
+            Surgical CAPD workflow observability. It is not a Microsoft, Nuance,
+            or Vincari product. The team name for this documentation capability
+            is Surgical CAPD; Vincari is the historical product lineage.
           </p>
         </div>
         <Card>
           <CardHeader>
-            <CardTitle className="text-base">What Vincari was</CardTitle>
+            <CardTitle className="text-base">Where Surgical CAPD came from</CardTitle>
           </CardHeader>
           <CardContent className="space-y-3 text-sm leading-relaxed text-muted-foreground">
             <p>

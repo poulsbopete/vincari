@@ -34,7 +34,7 @@ export default function InsightsPage() {
             <p>Patient: Rivera, Ana</p>
             <p>Encounter: OR-4412 primary TKA, left</p>
             <p>DocumentReference: operative note (CAPD), implant log</p>
-            <p>Source: Azure Health Data Services FHIR + EHR + Vincari note.</p>
+            <p>Source: Azure Health Data Services FHIR + EHR + Surgical CAPD note.</p>
             <CapabilityAction capability={capability} />
           </CardContent>
         </Card>

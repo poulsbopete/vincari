@@ -13,7 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Vincari · Surgical CAPD demo",
+  title: "Surgical CAPD",
   description:
     "Surgical computer-assisted physician documentation demo backed by Elastic Serverless Observability.",
 };
