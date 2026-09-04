@@ -1,4 +1,4 @@
-import { SURGICAL_CAPD_DASHBOARD_ID } from "./config";
+import { SURGICAL_CAPD_DASHBOARD_ID, SURGICAL_CAPD_SLO_TAG } from "./config";
 
 const TIME = { from: "now-24h", to: "now" };
 
@@ -120,7 +120,17 @@ export function kibanaStreamsUrl(kibanaBase: string) {
 }
 
 export function kibanaSloUrl(kibanaBase: string) {
-  return `${kibanaBase.replace(/\/$/, "")}/app/observability/slos`;
+  const base = kibanaBase.replace(/\/$/, "");
+  const search = risonEncode({
+    kqlQuery: SURGICAL_CAPD_SLO_TAG,
+    page: 0,
+    perPage: 25,
+    sort: { by: "status", direction: "desc" },
+    view: "cardView",
+    groupBy: "ungrouped",
+    filters: [],
+  });
+  return `${base}/app/observability/slos?search=${search}`;
 }
 
 export function kibanaDashboardsUrl(kibanaBase: string) {

@@ -103,7 +103,9 @@ export function ObservabilityPanel() {
           <p className="text-sm text-muted-foreground">
             Microsoft Cloud for Healthcare capabilities mapped onto Elastic
             Observability, Search, Security, and LLM observability — with
-            deep links into Discover, APM, Streams, and SLOs.
+            Deep links into Discover, APM, Streams, and SLOs. The shared
+            otel-demo project has hundreds of stale Kubernetes SLOs; the SLO
+            link is filtered to tag <code>surgical-capd</code>.
           </p>
         </div>
         <Button onClick={seed} disabled={busy} variant="secondary">
@@ -168,7 +170,7 @@ export function ObservabilityPanel() {
             <DeepLink href={links?.discoverErrors}>Errors</DeepLink>
             <DeepLink href={links?.discoverLatency}>Latency</DeepLink>
             <DeepLink href={links?.apmServices}>APM fleet</DeepLink>
-            <DeepLink href={links?.slos}>SLOs</DeepLink>
+            <DeepLink href={links?.slos}>SLOs (Surgical CAPD)</DeepLink>
             <DeepLink href={links?.streams}>Streams</DeepLink>
             <DeepLink href={links?.dashboards}>Dashboards</DeepLink>
           </CardContent>

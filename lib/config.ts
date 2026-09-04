@@ -10,6 +10,7 @@ export const DEFAULT_ES_URL =
   "https://otel-demo-a5630c.es.us-east-1.aws.elastic.cloud";
 export const SURGICAL_CAPD_DASHBOARD_ID =
   "36a7f722-bd87-4802-8a5d-b18d59c0275d";
+export const SURGICAL_CAPD_SLO_TAG = "surgical-capd";
 
 export function getElasticConfig() {
   const esUrl = (
