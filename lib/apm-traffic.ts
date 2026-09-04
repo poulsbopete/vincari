@@ -128,7 +128,7 @@ function buildSpan(
     attr("url.path", spec.route),
     attr("http.target", spec.route),
     attr("url.scheme", "https"),
-    attr("server.address", "vincari.vercel.app"),
+      attr("server.address", "healthcare-capd.vercel.app"),
     attr("http.status_code", statusCode),
     attr("http.response.status_code", statusCode),
   ];

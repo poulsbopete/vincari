@@ -13,6 +13,8 @@ Not a Microsoft, Nuance, or Vincari product. Surgical CAPD is the current name f
 | Clinical Insights | `/insights` | Observability + ES\|QL, Search (FHIR/AHDS) | `vincari-fhir` |
 | AI Assistance (Surgical CAPD) | `/or` | LLM observability + CAPD/EHR/Fabric logs | `vincari-capd` |
 
+App: https://healthcare-capd.vercel.app
+
 Kibana: https://otel-demo-a5630c.kb.us-east-1.aws.elastic.cloud/
 
 Vega dashboard: https://otel-demo-a5630c.kb.us-east-1.aws.elastic.cloud/app/dashboards#/view/36a7f722-bd87-4802-8a5d-b18d59c0275d?_g=(time:(from:now-24h,to:now))
