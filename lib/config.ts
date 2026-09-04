@@ -12,6 +12,13 @@ export const SURGICAL_CAPD_DASHBOARD_ID =
   "36a7f722-bd87-4802-8a5d-b18d59c0275d";
 export const SURGICAL_CAPD_SLO_TAG = "surgical-capd";
 
+/** Elasticsearch Serverless Search / AI Assistants project for signed notes. */
+export const DEFAULT_NOTES_KIBANA_URL =
+  "https://ai-assistants-ffcafb.kb.us-east-1.aws.elastic.cloud";
+export const DEFAULT_NOTES_ES_URL =
+  "https://ai-assistants-ffcafb.es.us-east-1.aws.elastic.cloud";
+export const NOTES_INDEX = "surgical-capd-notes";
+
 export function getElasticConfig() {
   const esUrl = (
     process.env.ELASTICSEARCH_URL ||
@@ -26,6 +33,26 @@ export function getElasticConfig() {
     DEFAULT_KIBANA_URL
   ).replace(/\/$/, "");
   return { esUrl, apiKey, kibanaUrl };
+}
+
+export function getNotesConfig() {
+  const esUrl = (
+    process.env.NOTES_ELASTICSEARCH_URL ||
+    process.env.NOTES_ES_URL ||
+    DEFAULT_NOTES_ES_URL
+  ).replace(/\/$/, "");
+  const apiKey = process.env.NOTES_ELASTICSEARCH_API_KEY || process.env.NOTES_API_KEY || "";
+  const kibanaUrl = (
+    process.env.NOTES_KIBANA_URL ||
+    process.env.NEXT_PUBLIC_NOTES_KIBANA_URL ||
+    DEFAULT_NOTES_KIBANA_URL
+  ).replace(/\/$/, "");
+  return { esUrl, apiKey, kibanaUrl };
+}
+
+export function isNotesConfigured() {
+  const { esUrl, apiKey } = getNotesConfig();
+  return Boolean(esUrl && apiKey);
 }
 
 export function isElasticConfigured() {

@@ -1,8 +1,9 @@
 import { NextResponse } from "next/server";
 import { getCase } from "@/lib/cases";
-import { getElasticConfig } from "@/lib/config";
+import { getElasticConfig, getNotesConfig, isNotesConfigured } from "@/lib/config";
 import { buildDeepLinks } from "@/lib/deep-links";
 import { ElasticError } from "@/lib/elastic";
+import { buildSignedNoteDoc, indexSignedNote } from "@/lib/notes";
 import { buildLiveEvent, ingestEvents } from "@/lib/telemetry";
 
 export async function POST(
@@ -18,9 +19,12 @@ export async function POST(
     completeness?: number;
     findings?: number;
     noteLength?: number;
+    note?: string;
   };
   const { kibanaUrl } = getElasticConfig();
-  const durationMs = 90 + Math.round((body.noteLength ?? 400) / 12);
+  const { kibanaUrl: notesKibanaUrl } = getNotesConfig();
+  const noteText = (body.note || surgical.note).trim();
+  const durationMs = 90 + Math.round((body.noteLength ?? noteText.length) / 12);
   const event = buildLiveEvent({
     capability: "ai-assistance",
     serviceName: "vincari-capd",
@@ -36,14 +40,29 @@ export async function POST(
   });
   try {
     await ingestEvents([event]);
+    let notes: Awaited<ReturnType<typeof indexSignedNote>> | { ok: false; skipped: true; reason: string } =
+      { ok: false, skipped: true, reason: "NOTES_API_KEY is not set" };
+    if (isNotesConfigured()) {
+      notes = await indexSignedNote(
+        buildSignedNoteDoc({
+          surgical,
+          note: noteText,
+          completeness: body.completeness ?? 100,
+          findings: body.findings ?? surgical.suggestions.length,
+          traceId: event["trace.id"],
+        }),
+      );
+    }
     return NextResponse.json({
       ok: true,
       traceId: event["trace.id"],
       action: event["event.action"],
+      notes,
       deepLinks: kibanaUrl
         ? buildDeepLinks(kibanaUrl, {
             caseId: surgical.id,
             traceId: event["trace.id"],
+            notesKibanaUrl: notes.ok ? notesKibanaUrl : undefined,
           })
         : null,
     });

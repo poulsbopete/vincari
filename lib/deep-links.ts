@@ -117,6 +117,27 @@ export function kibanaTraceUrl(kibanaBase: string, traceId: string) {
   return `${base}/app/apm/traces?${params.toString()}`;
 }
 
+export function kibanaNotesDiscoverUrl(
+  notesKibanaBase: string,
+  caseId?: string,
+) {
+  const query = caseId
+    ? [
+        "FROM surgical-capd-notes",
+        `| WHERE \`case.id\` == "${caseId.replace(/"/g, "")}"`,
+        "| SORT @timestamp DESC",
+        "| KEEP @timestamp, `case.id`, procedure, surgeon, `note.text`, `trace.id`",
+        "| LIMIT 20",
+      ].join(" ")
+    : [
+        "FROM surgical-capd-notes",
+        "| SORT @timestamp DESC",
+        "| KEEP @timestamp, `case.id`, procedure, surgeon, `note.text`",
+        "| LIMIT 20",
+      ].join(" ");
+  return kibanaDiscoverUrl(notesKibanaBase, { query });
+}
+
 export function kibanaStreamsUrl(kibanaBase: string) {
   return `${kibanaBase.replace(/\/$/, "")}/app/streams`;
 }
@@ -145,7 +166,13 @@ export function kibanaDashboardViewUrl(kibanaBase: string, dashboardId: string) 
 
 export function buildDeepLinks(
   kibanaUrl: string,
-  extras: { traceId?: string; caseId?: string; serviceName?: string; dashboardId?: string } = {},
+  extras: {
+    traceId?: string;
+    caseId?: string;
+    serviceName?: string;
+    dashboardId?: string;
+    notesKibanaUrl?: string;
+  } = {},
 ) {
   const service = extras.serviceName ?? "vincari-capd";
   const caseQuery = extras.caseId
@@ -176,5 +203,8 @@ export function buildDeepLinks(
       kibanaUrl,
       extras.dashboardId || SURGICAL_CAPD_DASHBOARD_ID,
     ),
+    notesSearch: extras.notesKibanaUrl
+      ? kibanaNotesDiscoverUrl(extras.notesKibanaUrl, extras.caseId)
+      : null,
   };
 }

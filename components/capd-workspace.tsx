@@ -25,7 +25,9 @@ type CompleteResponse = {
     discoverCase?: string | null;
     apmTrace?: string | null;
     discoverLogs?: string | null;
+    notesSearch?: string | null;
   } | null;
+  notes?: { ok?: boolean; skipped?: boolean; reason?: string; id?: string };
 };
 
 export function CapdWorkspace({ surgical }: { surgical: SurgicalCase }) {
@@ -60,6 +62,7 @@ export function CapdWorkspace({ surgical }: { surgical: SurgicalCase }) {
           completeness,
           findings: surgical.suggestions.length - accepted.length,
           noteLength: note.length,
+          note,
         }),
       });
       const data = (await res.json()) as CompleteResponse;
@@ -109,7 +112,16 @@ export function CapdWorkspace({ surgical }: { surgical: SurgicalCase }) {
                   <p>
                     Note filed. Trace{" "}
                     <code className="font-mono text-xs">{result.traceId}</code>{" "}
-                    written to Elastic Observability.
+                    written to Elastic Observability
+                    {result.notes?.ok
+                      ? ", and the operative note was indexed for search on ai-assistants."
+                      : "."}
+                    {result.notes?.skipped ? (
+                      <span className="mt-1 block text-xs text-muted-foreground">
+                        Note search is not wired yet (set NOTES_API_KEY for the
+                        ai-assistants project).
+                      </span>
+                    ) : null}
                   </p>
                   <div className="flex flex-wrap gap-2">
                     <DeepLink href={result.deepLinks?.discoverCase}>
@@ -120,6 +132,9 @@ export function CapdWorkspace({ surgical }: { surgical: SurgicalCase }) {
                     </DeepLink>
                     <DeepLink href={result.deepLinks?.discoverLogs}>
                       All CAPD logs
+                    </DeepLink>
+                    <DeepLink href={result.deepLinks?.notesSearch}>
+                      Search note
                     </DeepLink>
                   </div>
                 </div>
