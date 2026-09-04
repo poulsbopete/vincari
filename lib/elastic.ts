@@ -45,6 +45,13 @@ export async function esql<T = unknown>(query: string): Promise<{
   });
 }
 
+export async function esSearch(index: string, body: unknown) {
+  return esFetch(`/${index}/_search`, {
+    method: "POST",
+    body: JSON.stringify(body),
+  });
+}
+
 export async function bulkIndex(
   dataStream: string,
   docs: Record<string, unknown>[],
