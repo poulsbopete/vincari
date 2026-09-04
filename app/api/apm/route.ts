@@ -15,7 +15,7 @@ export async function GET(request: Request) {
     }
     const result = await emitApmTraffic(1);
     return NextResponse.json({
-      ok: result.traces.ok,
+      ok: Boolean(result.traces.ok && result.metrics.ok && result.appMetrics?.ok !== false),
       ...result,
     });
   } catch (error) {
@@ -30,7 +30,7 @@ export async function POST() {
   try {
     const result = await emitApmTraffic(1);
     return NextResponse.json({
-      ok: result.traces.ok,
+      ok: Boolean(result.traces.ok && result.metrics.ok && result.appMetrics?.ok !== false),
       ...result,
     });
   } catch (error) {
