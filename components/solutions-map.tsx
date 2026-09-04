@@ -1,6 +1,6 @@
 import Link from "next/link";
+import { ProductMark } from "@/components/product-mark";
 import { CAPABILITIES } from "@/lib/solutions";
-import { Badge } from "@/components/ui/badge";
 import {
   Card,
   CardContent,
@@ -18,9 +18,7 @@ export function SolutionsMap() {
             <CardHeader className="space-y-2">
               <div className="flex flex-wrap items-center gap-2">
                 {item.elasticProducts.map((product) => (
-                  <Badge key={product} variant="outline">
-                    {product}
-                  </Badge>
+                  <ProductMark key={product} product={product} />
                 ))}
               </div>
               <CardTitle className="text-lg">{item.msTitle}</CardTitle>

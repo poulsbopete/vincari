@@ -278,7 +278,17 @@ export type TraceFromLog = {
 };
 
 export async function emitTracesForLogEvents(events: TraceFromLog[]) {
-  if (events.length === 0) return { ok: true, status: 204, spanBatches: 0, sampleSpanId: "" };
+  if (events.length === 0) {
+    return {
+      ok: true,
+      status: 204,
+      body: "",
+      ingest: "",
+      spanBatches: 0,
+      sampleSpanId: "",
+      sampleTransactionName: "",
+    };
+  }
   const built = events.map((event) => {
     const durationMs = Math.max(12, Math.round(event.durationMs));
     const spec = specFromAction(event.serviceName, event.action, durationMs);

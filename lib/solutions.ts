@@ -29,6 +29,11 @@ export type Capability = {
   elasticHow: string;
   signals: string[];
   demoAction: string;
+  layers: {
+    product: ElasticProduct;
+    onScreen: string;
+    inElastic: string;
+  }[];
 };
 
 export const HEALTHCARE_SERVICES = [
@@ -60,6 +65,26 @@ export const CAPABILITIES: Capability[] = [
       "auth.anomaly (SIEM)",
     ],
     demoAction: "Book follow-up and open care plan",
+    layers: [
+      {
+        product: "Search",
+        onScreen: "Discharge summary, implant card, and med list lookup",
+        inElastic:
+          "Elasticsearch answers portal search from an index, not a full EHR scan on every click.",
+      },
+      {
+        product: "Observability",
+        onScreen: "Book follow-up writes logs, APM traces, and SLO samples",
+        inElastic:
+          "APM and SLOs watch booking and care-plan APIs; Discover shows care-plan render and record-fetch failures.",
+      },
+      {
+        product: "Security",
+        onScreen: "This chart is a patient-scoped session, not a bulk EHR pull",
+        inElastic:
+          "Elastic Security flags unusual record access — for example billing.svc reading FHIR Patients and CAPD notes.",
+      },
+    ],
   },
   {
     id: "virtual-health",
@@ -77,6 +102,14 @@ export const CAPABILITIES: Capability[] = [
       "session.qos warnings",
     ],
     demoAction: "Start a Teams consult",
+    layers: [
+      {
+        product: "Observability",
+        onScreen: "Start visit writes the identity → Graph → media join path",
+        inElastic:
+          "Join latency, Graph errors, and QoS warnings land in the same APM trace family.",
+      },
+    ],
   },
   {
     id: "clinical-insights",
@@ -96,6 +129,26 @@ export const CAPABILITIES: Capability[] = [
       "unusual EHR access (SIEM)",
     ],
     demoAction: "Assemble unified FHIR view",
+    layers: [
+      {
+        product: "Search",
+        onScreen: "DocumentReference lookup beside the FHIR store",
+        inElastic:
+          "Elasticsearch searches clinical documents without walking every FHIR resource.",
+      },
+      {
+        product: "Observability",
+        onScreen: "Assemble bundle is a traced pipeline",
+        inElastic:
+          "ES|QL and APM correlate Patient, Encounter, and DocumentReference assemble latency.",
+      },
+      {
+        product: "Security",
+        onScreen: "Who is allowed to read this Patient bundle",
+        inElastic:
+          "A billing service account pulling the OR board is a SIEM finding, not an APM timeout.",
+      },
+    ],
   },
   {
     id: "ai-assistance",
@@ -114,6 +167,20 @@ export const CAPABILITIES: Capability[] = [
       "fabric.pipeline",
     ],
     demoAction: "Sign a Surgical CAPD operative note",
+    layers: [
+      {
+        product: "LLM observability",
+        onScreen: "Note draft tokens, model, and latency",
+        inElastic:
+          "gen_ai spans on the same CAPD trace as EHR pulls and Fabric jobs.",
+      },
+      {
+        product: "Observability",
+        onScreen: "Sign & file writes logs plus the APM waterfall",
+        inElastic:
+          "CAPD suggestions, EHR pulls, and note.signed share one trace.id in Serverless Observability.",
+      },
+    ],
   },
 ];
 

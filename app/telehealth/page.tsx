@@ -1,6 +1,7 @@
 import { AppShell } from "@/components/app-shell";
 import { CapabilityAction } from "@/components/capability-action";
-import { Badge } from "@/components/ui/badge";
+import { ElasticSolves } from "@/components/elastic-solves";
+import { ProductMark } from "@/components/product-mark";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { capabilityById } from "@/lib/solutions";
 
@@ -19,9 +20,7 @@ export default function TelehealthPage() {
         <p className="text-sm text-muted-foreground">{capability.msSummary}</p>
         <div className="flex flex-wrap gap-2">
           {capability.elasticProducts.map((product) => (
-            <Badge key={product} variant="outline">
-              {product}
-            </Badge>
+            <ProductMark key={product} product={product} />
           ))}
         </div>
       </div>
@@ -37,17 +36,7 @@ export default function TelehealthPage() {
             <CapabilityAction capability={capability} />
           </CardContent>
         </Card>
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-base">Elastic solves</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-2 text-sm text-muted-foreground">
-            <p>{capability.elasticHow}</p>
-            <p className="font-mono text-xs text-primary">
-              service.name = {capability.serviceName}
-            </p>
-          </CardContent>
-        </Card>
+        <ElasticSolves capability={capability} />
       </div>
     </AppShell>
   );
