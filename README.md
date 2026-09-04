@@ -15,7 +15,12 @@ This is not a Microsoft, Nuance, or Vincari product. Vincari’s CAPD tools were
 
 ## Elastic
 
-Uses the shared **otel-demo** serverless project by default (`ES_URL` / `KIBANA_URL`). Logs land on `logs-vincari.capd-default` with `service.name: vincari-capd`.
+Backs onto the shared **otel-demo** Serverless Observability project:
+
+- Kibana: https://otel-demo-a5630c.kb.us-east-1.aws.elastic.cloud/
+- Elasticsearch: `otel-demo-a5630c.es.us-east-1.aws.elastic.cloud`
+
+Logs land on `logs-vincari.capd-default` with `service.name: vincari-capd`.
 
 Copy `.env.example` to `.env.local` and set:
 

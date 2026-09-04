@@ -128,12 +128,19 @@ export function ObservabilityPanel() {
         <Card>
           <CardHeader className="pb-2">
             <CardDescription>Project</CardDescription>
-            <CardTitle className="text-base">
-              {health?.kibanaHost || "otel-demo"}
-            </CardTitle>
+            <CardTitle className="text-base">otel-demo</CardTitle>
           </CardHeader>
           <CardContent className="text-xs text-muted-foreground">
-            Kibana {health?.version || "serverless"}
+            <a
+              href="https://otel-demo-a5630c.kb.us-east-1.aws.elastic.cloud/"
+              target="_blank"
+              rel="noreferrer"
+              className="text-primary underline-offset-4 hover:underline"
+            >
+              {health?.kibanaHost ||
+                "otel-demo-a5630c.kb.us-east-1.aws.elastic.cloud"}
+            </a>
+            <div className="mt-1">Kibana {health?.version || "serverless"}</div>
           </CardContent>
         </Card>
         <Card>

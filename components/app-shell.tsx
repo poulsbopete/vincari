@@ -41,13 +41,15 @@ export function AppShell({
                 {item.label}
               </Link>
             ))}
-            <Link
-              href="/ops"
+            <a
+              href="https://otel-demo-a5630c.kb.us-east-1.aws.elastic.cloud/"
+              target="_blank"
+              rel="noreferrer"
               className="ml-2 inline-flex items-center gap-1.5 rounded-md border border-border px-2.5 py-1 text-xs text-primary hover:bg-muted"
             >
               <Activity className="size-3.5" />
-              Elastic o11y
-            </Link>
+              Kibana
+            </a>
           </nav>
         </div>
         {eyebrow ? (
