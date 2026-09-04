@@ -87,12 +87,32 @@ export default function AboutPage() {
           </CardHeader>
           <CardContent className="space-y-3 text-sm leading-relaxed text-muted-foreground">
             <p>
-              A CAPD platform still has to stay fast and trustworthy in the OR:
-              EHR pulls, implant lookups, coding engines, and note sign events.
-              This demo writes those workflow logs into an Elastic Cloud
-              Serverless Observability project and deep-links surgeons’ ops
-              counterparts into Discover, APM, and Streams.
+              Microsoft Cloud for Healthcare provides the clinical apps. Elastic
+              is the operational and investigative plane that proves they stay
+              fast, complete, and trustworthy.
             </p>
+            <ul className="list-disc space-y-2 pl-5">
+              <li>
+                <strong className="text-foreground">Patient Engagement</strong> —
+                Observability SLOs/APM on the portal and booking APIs; Security
+                for record-access anomalies; Search for care-plan lookup.
+              </li>
+              <li>
+                <strong className="text-foreground">Virtual Health</strong> —
+                traces and logs across Teams/Graph join, session QoS, and visit
+                teardown.
+              </li>
+              <li>
+                <strong className="text-foreground">Clinical Insights</strong> —
+                ES|QL over FHIR/AHDS pipeline health plus Search beside the
+                unified patient view.
+              </li>
+              <li>
+                <strong className="text-foreground">AI Assistance</strong> —
+                LLM observability for Dragon Copilot–style note drafts, plus
+                CAPD/EHR/Fabric events on the same Serverless project.
+              </li>
+            </ul>
           </CardContent>
         </Card>
       </div>

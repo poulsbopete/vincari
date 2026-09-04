@@ -4,9 +4,9 @@ import {
   FACILITY,
   LOGS_DATA_STREAM,
   SERVICE_ENVIRONMENT,
-  SERVICE_NAME,
 } from "./config";
 import { bulkIndex } from "./elastic";
+import type { CapabilityId } from "./solutions";
 
 function hexId(bytes: number) {
   return randomBytes(bytes).toString("hex");
@@ -23,117 +23,235 @@ export type TelemetryEvent = {
   "event.duration"?: number;
   "trace.id": string;
   "transaction.id": string;
+  "labels.capability": CapabilityId;
+  "labels.facility": string;
   "labels.case_id"?: string;
   "labels.procedure"?: string;
-  "labels.facility": string;
   "labels.surgeon"?: string;
   "labels.completeness"?: number;
   "labels.capd_findings"?: number;
+  "labels.patient_id"?: string;
+  "gen_ai.operation.name"?: string;
+  "gen_ai.request.model"?: string;
+  "gen_ai.usage.input_tokens"?: number;
+  "gen_ai.usage.output_tokens"?: number;
 };
 
-const ACTIONS = [
+function jitter(base: number, spread: number) {
+  return Math.max(8, Math.round(base + (Math.random() - 0.5) * spread));
+}
+
+const PORTAL_ACTIONS = [
+  "appointment.book",
+  "careplan.render",
+  "records.fetch",
+  "portal.login",
+] as const;
+
+const TELEHEALTH_ACTIONS = [
+  "telehealth.join",
+  "teams.graph",
+  "session.qos",
+  "visit.end",
+] as const;
+
+const FHIR_ACTIONS = [
+  "fhir.patient.read",
+  "fhir.encounter.search",
+  "fhir.bundle.assemble",
+  "ahds.export",
+] as const;
+
+const CAPD_ACTIONS = [
   "case.opened",
   "capd.suggest",
   "ehr.pull",
   "note.save",
   "coding.score",
   "note.signed",
-  "implant.lookup",
+  "gen_ai.note.draft",
+  "fabric.pipeline",
 ] as const;
 
-function jitter(base: number, spread: number) {
-  return Math.max(8, Math.round(base + (Math.random() - 0.5) * spread));
+function baseEvent(partial: Omit<TelemetryEvent, "service.environment" | "labels.facility">): TelemetryEvent {
+  return {
+    "service.environment": SERVICE_ENVIRONMENT,
+    "labels.facility": FACILITY,
+    ...partial,
+  };
 }
 
-export function buildHistoricalEvents(count = 72): TelemetryEvent[] {
+export function buildHistoricalEvents(count = 96): TelemetryEvent[] {
   const now = Date.now();
   const events: TelemetryEvent[] = [];
   for (let i = 0; i < count; i++) {
-    const surgical = CASES[i % CASES.length];
-    const action = ACTIONS[i % ACTIONS.length];
-    const ageMs = Math.round((count - i) * 4.5 * 60_000 * Math.random() + i * 45_000);
+    const bucket = i % 4;
+    const ageMs = Math.round((count - i) * 3.2 * 60_000 * Math.random() + i * 35_000);
     const timestamp = new Date(now - ageMs).toISOString();
-    const traceId = hexId(16);
-    const durationMs =
-      action === "ehr.pull"
-        ? jitter(420, 800)
-        : action === "coding.score"
-          ? jitter(180, 220)
-          : action === "implant.lookup"
-            ? jitter(90, 80)
-            : jitter(40, 50);
-    const ehrTimeout = action === "ehr.pull" && durationMs > 850;
-    const codingWarn = action === "coding.score" && surgical.status === "coding-hold";
-    const level: TelemetryEvent["log.level"] = ehrTimeout
-      ? "error"
-      : codingWarn
-        ? "warn"
-        : "info";
-    const message = ehrTimeout
-      ? `EHR problem-list pull timed out for ${surgical.id}`
-      : codingWarn
-        ? `Coding hold: incomplete laterality or implant data on ${surgical.id}`
-        : `${action} for ${surgical.id} ${surgical.procedure}`;
-    events.push({
-      "@timestamp": timestamp,
-      message,
-      "log.level": level,
-      "service.name": SERVICE_NAME,
-      "service.environment": SERVICE_ENVIRONMENT,
-      "event.dataset": "vincari.capd",
-      "event.action": action,
-      "event.duration": durationMs * 1_000_000,
-      "trace.id": traceId,
-      "transaction.id": hexId(8),
-      "labels.case_id": surgical.id,
-      "labels.procedure": surgical.procedure,
-      "labels.facility": FACILITY,
-      "labels.surgeon": surgical.surgeon,
-      "labels.completeness": surgical.completeness,
-      "labels.capd_findings": surgical.suggestions.length,
-    });
+    const surgical = CASES[i % CASES.length];
+    if (bucket === 0) {
+      const action = PORTAL_ACTIONS[i % PORTAL_ACTIONS.length];
+      const durationMs = action === "records.fetch" ? jitter(280, 500) : jitter(70, 80);
+      const error = action === "records.fetch" && durationMs > 620;
+      events.push(
+        baseEvent({
+          "@timestamp": timestamp,
+          message: error
+            ? `Health-record fetch timed out for ${surgical.mrn}`
+            : `${action} for ${surgical.patient} (${surgical.mrn})`,
+          "log.level": error ? "error" : "info",
+          "service.name": "vincari-portal",
+          "event.dataset": "vincari.engagement",
+          "event.action": action,
+          "event.duration": durationMs * 1_000_000,
+          "trace.id": hexId(16),
+          "transaction.id": hexId(8),
+          "labels.capability": "engagement",
+          "labels.case_id": surgical.id,
+          "labels.patient_id": surgical.mrn,
+        }),
+      );
+    } else if (bucket === 1) {
+      const action = TELEHEALTH_ACTIONS[i % TELEHEALTH_ACTIONS.length];
+      const durationMs = action === "telehealth.join" ? jitter(900, 1400) : jitter(120, 200);
+      const warn = action === "session.qos" && i % 7 === 0;
+      const error = action === "teams.graph" && i % 11 === 0;
+      events.push(
+        baseEvent({
+          "@timestamp": timestamp,
+          message: error
+            ? `Teams Graph token exchange failed for visit ${surgical.id}`
+            : warn
+              ? `Telehealth QoS degraded (jitter) on visit ${surgical.id}`
+              : `${action} Teams consult ${surgical.id}`,
+          "log.level": error ? "error" : warn ? "warn" : "info",
+          "service.name": "vincari-telehealth",
+          "event.dataset": "vincari.telehealth",
+          "event.action": action,
+          "event.duration": durationMs * 1_000_000,
+          "trace.id": hexId(16),
+          "transaction.id": hexId(8),
+          "labels.capability": "virtual-health",
+          "labels.case_id": surgical.id,
+          "labels.patient_id": surgical.mrn,
+          "labels.surgeon": surgical.surgeon,
+        }),
+      );
+    } else if (bucket === 2) {
+      const action = FHIR_ACTIONS[i % FHIR_ACTIONS.length];
+      const durationMs = action === "fhir.bundle.assemble" ? jitter(340, 400) : jitter(90, 120);
+      const warn = action === "ahds.export" && i % 9 === 0;
+      events.push(
+        baseEvent({
+          "@timestamp": timestamp,
+          message: warn
+            ? `Azure Health Data Services export lag for ${surgical.mrn}`
+            : `${action} FHIR ${surgical.mrn}`,
+          "log.level": warn ? "warn" : "info",
+          "service.name": "vincari-fhir",
+          "event.dataset": "vincari.fhir",
+          "event.action": action,
+          "event.duration": durationMs * 1_000_000,
+          "trace.id": hexId(16),
+          "transaction.id": hexId(8),
+          "labels.capability": "clinical-insights",
+          "labels.case_id": surgical.id,
+          "labels.patient_id": surgical.mrn,
+          "labels.procedure": surgical.procedure,
+        }),
+      );
+    } else {
+      const action = CAPD_ACTIONS[i % CAPD_ACTIONS.length];
+      const durationMs =
+        action === "ehr.pull"
+          ? jitter(420, 800)
+          : action === "gen_ai.note.draft"
+            ? jitter(1100, 900)
+            : jitter(50, 60);
+      const ehrTimeout = action === "ehr.pull" && durationMs > 850;
+      events.push(
+        baseEvent({
+          "@timestamp": timestamp,
+          message: ehrTimeout
+            ? `EHR problem-list pull timed out for ${surgical.id}`
+            : `${action} for ${surgical.id} ${surgical.procedure}`,
+          "log.level": ehrTimeout ? "error" : "info",
+          "service.name": "vincari-capd",
+          "event.dataset": "vincari.capd",
+          "event.action": action,
+          "event.duration": durationMs * 1_000_000,
+          "trace.id": hexId(16),
+          "transaction.id": hexId(8),
+          "labels.capability": "ai-assistance",
+          "labels.case_id": surgical.id,
+          "labels.procedure": surgical.procedure,
+          "labels.surgeon": surgical.surgeon,
+          "labels.completeness": surgical.completeness,
+          "labels.capd_findings": surgical.suggestions.length,
+          ...(action === "gen_ai.note.draft"
+            ? {
+                "gen_ai.operation.name": "chat",
+                "gen_ai.request.model": "dragon-copilot-demo",
+                "gen_ai.usage.input_tokens": 800 + (i % 200),
+                "gen_ai.usage.output_tokens": 220 + (i % 80),
+              }
+            : {}),
+        }),
+      );
+    }
   }
   return events;
 }
 
 export function buildLiveEvent(input: {
-  caseId: string;
-  procedure: string;
-  surgeon: string;
+  capability: CapabilityId;
+  serviceName: string;
+  dataset: string;
   action: string;
-  level?: TelemetryEvent["log.level"];
   message: string;
+  level?: TelemetryEvent["log.level"];
   durationMs?: number;
+  caseId?: string;
+  procedure?: string;
+  surgeon?: string;
+  patientId?: string;
   completeness?: number;
   findings?: number;
-  traceId?: string;
+  genAi?: boolean;
 }): TelemetryEvent {
-  return {
+  return baseEvent({
     "@timestamp": new Date().toISOString(),
     message: input.message,
     "log.level": input.level ?? "info",
-    "service.name": SERVICE_NAME,
-    "service.environment": SERVICE_ENVIRONMENT,
-    "event.dataset": "vincari.capd",
+    "service.name": input.serviceName,
+    "event.dataset": input.dataset,
     "event.action": input.action,
     "event.duration": (input.durationMs ?? jitter(55, 40)) * 1_000_000,
-    "trace.id": input.traceId ?? hexId(16),
+    "trace.id": hexId(16),
     "transaction.id": hexId(8),
+    "labels.capability": input.capability,
     "labels.case_id": input.caseId,
     "labels.procedure": input.procedure,
-    "labels.facility": FACILITY,
     "labels.surgeon": input.surgeon,
     "labels.completeness": input.completeness,
     "labels.capd_findings": input.findings,
-  };
+    "labels.patient_id": input.patientId,
+    ...(input.genAi
+      ? {
+          "gen_ai.operation.name": "chat",
+          "gen_ai.request.model": "dragon-copilot-demo",
+          "gen_ai.usage.input_tokens": 640,
+          "gen_ai.usage.output_tokens": 180,
+        }
+      : {}),
+  });
 }
 
 export async function ingestEvents(events: TelemetryEvent[]) {
   const result = await bulkIndex(LOGS_DATA_STREAM, events);
-  const errors = Boolean(result.errors);
   return {
     ingested: events.length,
-    errors,
+    errors: Boolean(result.errors),
     dataStream: LOGS_DATA_STREAM,
     sampleTraceId: events[0]?.["trace.id"],
   };

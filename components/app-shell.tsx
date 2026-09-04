@@ -2,7 +2,8 @@ import Link from "next/link";
 import { Activity, Stethoscope } from "lucide-react";
 
 const NAV = [
-  { href: "/", label: "OR board" },
+  { href: "/", label: "Capabilities" },
+  { href: "/or", label: "OR / CAPD" },
   { href: "/ops", label: "Observability" },
   { href: "/about", label: "Lineage" },
 ];
@@ -27,7 +28,7 @@ export function AppShell({
                 Vincari
               </span>
               <span className="block text-[11px] text-muted-foreground">
-                Surgical CAPD · demo
+                Surgical CAPD · Cloud for Healthcare
               </span>
             </span>
           </Link>

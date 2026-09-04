@@ -1,23 +1,25 @@
 import { AppShell } from "@/components/app-shell";
-import { OrBoard } from "@/components/or-board";
+import { SolutionsMap } from "@/components/solutions-map";
 
 export default function HomePage() {
   return (
-    <AppShell eyebrow="Synthetic patients only · Pacific Surgical Institute demo · Elastic Observability on serverless">
-      <div className="mb-6 space-y-2">
+    <AppShell eyebrow="Microsoft Cloud for Healthcare capabilities · solved in Elastic Serverless Observability (otel-demo)">
+      <div className="mb-6 max-w-3xl space-y-2">
         <p className="text-xs uppercase tracking-[0.18em] text-primary">
-          Today’s board
+          Elastic × Cloud for Healthcare
         </p>
         <h1 className="text-3xl font-semibold tracking-tight">
-          Surgical documentation worklist
+          Four core capabilities, one observability plane
         </h1>
-        <p className="max-w-2xl text-sm text-muted-foreground">
-          Vincari-style computer-assisted physician documentation for the OR.
-          Open a case, close CAPD gaps, then jump from the signed note into
-          Elastic logs and traces.
+        <p className="text-sm text-muted-foreground">
+          Vincari-lineage CAPD sits inside Microsoft Cloud for Healthcare. This
+          demo shows how Elastic Observability — plus Search, Security, and LLM
+          observability — covers Patient Engagement, Virtual Health, Clinical
+          Insights, and AI Assistance. Each card writes telemetry into
+          otel-demo and deep-links to Kibana.
         </p>
       </div>
-      <OrBoard />
+      <SolutionsMap />
     </AppShell>
   );
 }

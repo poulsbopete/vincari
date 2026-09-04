@@ -29,6 +29,7 @@ type DeepLinks = {
   apmServices?: string | null;
   streams?: string | null;
   dashboards?: string | null;
+  slos?: string | null;
 };
 
 type EventRow = {
@@ -36,8 +37,8 @@ type EventRow = {
   level: string;
   message: string;
   action: string;
+  serviceName: string;
   caseId: string;
-  procedure: string;
   traceId: string;
   durationNs: number | null;
 };
@@ -99,12 +100,13 @@ export function ObservabilityPanel() {
             Platform observability
           </h1>
           <p className="text-sm text-muted-foreground">
-            CAPD workflow telemetry in Elastic Serverless Observability, with
-            deep links into Discover, APM, and Streams.
+            Microsoft Cloud for Healthcare capabilities mapped onto Elastic
+            Observability, Search, Security, and LLM observability — with
+            deep links into Discover, APM, Streams, and SLOs.
           </p>
         </div>
         <Button onClick={seed} disabled={busy} variant="secondary">
-          {busy ? "Seeding…" : "Seed 80 workflow events"}
+          {busy ? "Seeding…" : "Seed 96 healthcare events"}
         </Button>
       </div>
 
@@ -145,11 +147,11 @@ export function ObservabilityPanel() {
         </Card>
         <Card>
           <CardHeader className="pb-2">
-            <CardDescription>CAPD events loaded</CardDescription>
+            <CardDescription>Healthcare events loaded</CardDescription>
             <CardTitle className="text-base">{data?.count ?? "—"}</CardTitle>
           </CardHeader>
           <CardContent className="text-xs text-muted-foreground">
-            service.name = vincari-capd
+            portal · telehealth · fhir · capd
           </CardContent>
         </Card>
         <Card>
@@ -161,7 +163,8 @@ export function ObservabilityPanel() {
             <DeepLink href={links?.discoverLogs}>Discover logs</DeepLink>
             <DeepLink href={links?.discoverErrors}>Errors</DeepLink>
             <DeepLink href={links?.discoverLatency}>Latency</DeepLink>
-            <DeepLink href={links?.apmService}>APM service</DeepLink>
+            <DeepLink href={links?.apmServices}>APM fleet</DeepLink>
+            <DeepLink href={links?.slos}>SLOs</DeepLink>
             <DeepLink href={links?.streams}>Streams</DeepLink>
             <DeepLink href={links?.dashboards}>Dashboards</DeepLink>
           </CardContent>
@@ -170,10 +173,10 @@ export function ObservabilityPanel() {
 
       <Card>
         <CardHeader>
-          <CardTitle className="text-base">Recent CAPD telemetry</CardTitle>
+          <CardTitle className="text-base">Recent healthcare telemetry</CardTitle>
           <CardDescription>
-            Each Sign & file action writes a log with trace.id for one-click
-            jump into Kibana.
+            Patient Engagement, Virtual Health, Clinical Insights, and AI
+            Assistance events, each with a Kibana deep link.
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -182,6 +185,7 @@ export function ObservabilityPanel() {
               <TableRow>
                 <TableHead>Time</TableHead>
                 <TableHead>Level</TableHead>
+                <TableHead>Service</TableHead>
                 <TableHead>Action</TableHead>
                 <TableHead>Case</TableHead>
                 <TableHead>Duration</TableHead>
@@ -202,13 +206,13 @@ export function ObservabilityPanel() {
                     </Badge>
                   </TableCell>
                   <TableCell className="font-mono text-xs">
+                    {event.serviceName}
+                  </TableCell>
+                  <TableCell className="font-mono text-xs">
                     {event.action}
                   </TableCell>
                   <TableCell>
                     <div className="text-sm">{event.caseId}</div>
-                    <div className="max-w-[220px] truncate text-xs text-muted-foreground">
-                      {event.procedure}
-                    </div>
                   </TableCell>
                   <TableCell>{formatDuration(event.durationNs)}</TableCell>
                   <TableCell>
@@ -220,8 +224,7 @@ export function ObservabilityPanel() {
           </Table>
           {(data?.events || []).length === 0 ? (
             <p className="py-6 text-center text-sm text-muted-foreground">
-              No vincari-capd logs yet. Seed events or sign a note from the OR
-              board.
+              No healthcare logs yet. Seed events or run a capability workflow.
             </p>
           ) : null}
         </CardContent>

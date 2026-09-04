@@ -22,26 +22,28 @@ function risonEncode(value: unknown): string {
   return String(value);
 }
 
+const FLEET = `"vincari-portal", "vincari-telehealth", "vincari-fhir", "vincari-capd"`;
+
 export const VINCARI_LOGS_ESQL = [
   "FROM logs-*",
-  '| WHERE service.name == "vincari-capd"',
+  `| WHERE service.name IN (${FLEET})`,
   "| SORT @timestamp DESC",
-  "| KEEP @timestamp, log.level, message, event.action, labels.case_id, labels.procedure, trace.id, event.duration",
+  "| KEEP @timestamp, log.level, message, event.action, service.name, labels.case_id, trace.id, event.duration",
   "| LIMIT 50",
 ].join(" ");
 
 export const VINCARI_ERRORS_ESQL = [
   "FROM logs-*",
-  '| WHERE service.name == "vincari-capd" AND log.level IN ("error", "warn")',
+  `| WHERE service.name IN (${FLEET}) AND log.level IN ("error", "warn")`,
   "| SORT @timestamp DESC",
-  "| KEEP @timestamp, log.level, message, event.action, labels.case_id, trace.id",
+  "| KEEP @timestamp, log.level, message, event.action, service.name, trace.id",
   "| LIMIT 50",
 ].join(" ");
 
 export const VINCARI_LATENCY_ESQL = [
   "FROM logs-*",
-  '| WHERE service.name == "vincari-capd" AND event.duration IS NOT NULL',
-  "| STATS events = COUNT(*), p95_ns = PERCENTILE(event.duration, 95) BY event.action",
+  `| WHERE service.name IN (${FLEET}) AND event.duration IS NOT NULL`,
+  "| STATS events = COUNT(*), p95_ns = PERCENTILE(event.duration, 95) BY service.name, event.action",
   "| SORT events DESC",
   "| LIMIT 15",
 ].join(" ");
@@ -82,7 +84,7 @@ export function kibanaApmServicesUrl(kibanaBase: string, serviceName?: string) {
     rangeTo: TIME.to,
     kuery: serviceName
       ? `service.name : "${serviceName}"`
-      : 'service.name : "vincari-capd"',
+      : 'service.name : "vincari-portal" or service.name : "vincari-telehealth" or service.name : "vincari-fhir" or service.name : "vincari-capd"',
   });
   return `${base}/app/apm/services?${params.toString()}`;
 }
@@ -115,6 +117,10 @@ export function kibanaStreamsUrl(kibanaBase: string) {
   return `${kibanaBase.replace(/\/$/, "")}/app/streams`;
 }
 
+export function kibanaSloUrl(kibanaBase: string) {
+  return `${kibanaBase.replace(/\/$/, "")}/app/observability/slos`;
+}
+
 export function kibanaDashboardsUrl(kibanaBase: string) {
   return `${kibanaBase.replace(/\/$/, "")}/app/dashboards#/list?_g=(time:(from:now-24h,to:now))`;
 }
@@ -125,12 +131,13 @@ export function kibanaDashboardViewUrl(kibanaBase: string, dashboardId: string) 
 
 export function buildDeepLinks(
   kibanaUrl: string,
-  extras: { traceId?: string; caseId?: string } = {},
+  extras: { traceId?: string; caseId?: string; serviceName?: string } = {},
 ) {
+  const service = extras.serviceName ?? "vincari-capd";
   const caseQuery = extras.caseId
     ? [
         "FROM logs-*",
-        `| WHERE service.name == "vincari-capd" AND labels.case_id == "${extras.caseId}"`,
+        `| WHERE labels.case_id == "${extras.caseId}"`,
         "| SORT @timestamp DESC",
         "| LIMIT 50",
       ].join(" ")
@@ -143,12 +150,13 @@ export function buildDeepLinks(
       query: VINCARI_LATENCY_ESQL,
     }),
     discoverCase: kibanaDiscoverUrl(kibanaUrl, { query: caseQuery }),
-    apmServices: kibanaApmServicesUrl(kibanaUrl, "vincari-capd"),
-    apmService: kibanaApmServiceUrl(kibanaUrl),
+    apmServices: kibanaApmServicesUrl(kibanaUrl),
+    apmService: kibanaApmServiceUrl(kibanaUrl, service),
     apmTrace: extras.traceId
       ? kibanaTraceUrl(kibanaUrl, extras.traceId)
       : kibanaApmServicesUrl(kibanaUrl),
     streams: kibanaStreamsUrl(kibanaUrl),
     dashboards: kibanaDashboardsUrl(kibanaUrl),
+    slos: kibanaSloUrl(kibanaUrl),
   };
 }

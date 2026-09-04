@@ -1,6 +1,6 @@
 export const SERVICE_NAME = "vincari-capd";
 export const SERVICE_ENVIRONMENT = "demo";
-export const LOGS_DATA_STREAM = "logs-vincari.capd-default";
+export const LOGS_DATA_STREAM = "logs-vincari.healthcare-default";
 export const FACILITY = "Pacific Surgical Institute";
 
 /** Elastic Cloud Serverless Observability project used by this demo. */

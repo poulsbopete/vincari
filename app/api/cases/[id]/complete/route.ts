@@ -22,12 +22,15 @@ export async function POST(
   const { kibanaUrl } = getElasticConfig();
   const durationMs = 90 + Math.round((body.noteLength ?? 400) / 12);
   const event = buildLiveEvent({
-    caseId: surgical.id,
-    procedure: surgical.procedure,
-    surgeon: surgical.surgeon,
+    capability: "ai-assistance",
+    serviceName: "vincari-capd",
+    dataset: "vincari.capd",
     action: "note.signed",
     message: `Operative note signed for ${surgical.id} (${surgical.procedure})`,
     durationMs,
+    caseId: surgical.id,
+    procedure: surgical.procedure,
+    surgeon: surgical.surgeon,
     completeness: body.completeness ?? 100,
     findings: body.findings ?? surgical.suggestions.length,
   });

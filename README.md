@@ -1,42 +1,31 @@
-# Vincari surgical CAPD demo
+# Vincari × Elastic healthcare demo
 
-Unaffiliated **surgical computer-assisted physician documentation (CAPD)** demo for surgeons’ OR workflow. The UI is a Vincari-style worklist; the backend writes workflow logs into an **Elastic Cloud Serverless Observability** project and exposes **Kibana deep links** (Discover ES|QL, APM services, Streams).
+Unaffiliated demo of **Microsoft Cloud for Healthcare** core capabilities, mapped onto **Elastic** solutions (Observability, Search, Security, LLM observability) on the **otel-demo** Serverless Observability project.
 
-This is not a Microsoft, Nuance, or Vincari product. Vincari’s CAPD tools were acquired by Nuance (2019) and became part of Microsoft Cloud for Healthcare after Microsoft acquired Nuance (2022).
+Not a Microsoft, Nuance, or Vincari product. Vincari CAPD was acquired by Nuance (2019) and became part of Microsoft Cloud for Healthcare after Microsoft acquired Nuance (2022).
 
-## App surfaces
+## Capability map
+
+| Microsoft capability | Demo route | Elastic solutions | `service.name` |
+| --- | --- | --- | --- |
+| Patient Engagement | `/engagement` | Observability SLOs/APM, Security, Search | `vincari-portal` |
+| Virtual Health | `/telehealth` | Observability traces/logs (Teams join path) | `vincari-telehealth` |
+| Clinical Insights | `/insights` | Observability + ES\|QL, Search (FHIR/AHDS) | `vincari-fhir` |
+| AI Assistance | `/or` | LLM observability + CAPD/EHR/Fabric logs | `vincari-capd` |
+
+Kibana: https://otel-demo-a5630c.kb.us-east-1.aws.elastic.cloud/
+
+Logs: `logs-vincari.healthcare-default` (plus earlier `logs-vincari.capd-default`). Query `FROM logs-*`.
+
+## Other routes
 
 | Route | Purpose |
 | --- | --- |
-| `/` | Today’s OR board |
-| `/cases/[id]` | Operative note + CAPD gaps; **Sign & file** ingests a log with `trace.id` |
-| `/ops` | Live events from Elasticsearch + Kibana deep links |
-| `/about` | Acquisition lineage and demo disclaimer |
+| `/` | Capability map |
+| `/cases/[id]` | Operative note + CAPD; **Sign & file** |
+| `/ops` | Fleet telemetry + Kibana deep links |
+| `/about` | Lineage and Elastic mapping |
 
-## Elastic
+## Local
 
-Backs onto the shared **otel-demo** Serverless Observability project:
-
-- Kibana: https://otel-demo-a5630c.kb.us-east-1.aws.elastic.cloud/
-- Elasticsearch: `otel-demo-a5630c.es.us-east-1.aws.elastic.cloud`
-
-Logs land on `logs-vincari.capd-default` with `service.name: vincari-capd`.
-
-Copy `.env.example` to `.env.local` and set:
-
-- `ES_URL` or `ELASTICSEARCH_URL`
-- `ES_API_KEY` or `ELASTICSEARCH_API_KEY`
-- `KIBANA_URL` (used to build deep links)
-
-Then:
-
-```bash
-npm install
-npm run dev
-```
-
-On `/ops`, click **Seed 80 workflow events**, or sign a note from a case.
-
-## Deploy
-
-Vercel (this repo). Add the same env vars for Production / Preview / Development. Never commit `.env.local`.
+Copy `.env.example` to `.env.local` and set `ES_API_KEY`. Then `npm install && npm run dev`.

@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server";
-import { SERVICE_NAME, getElasticConfig } from "@/lib/config";
+import { getElasticConfig } from "@/lib/config";
 import { buildDeepLinks } from "@/lib/deep-links";
 import { ElasticError, esql } from "@/lib/elastic";
+import { HEALTHCARE_SERVICES } from "@/lib/solutions";
 import { buildHistoricalEvents, ingestEvents } from "@/lib/telemetry";
 
 type LogRow = {
@@ -9,27 +10,32 @@ type LogRow = {
   level: string;
   message: string;
   action: string;
+  serviceName: string;
   caseId: string;
-  procedure: string;
   traceId: string;
   durationNs: number | null;
 };
 
+const FLEET = HEALTHCARE_SERVICES.map((name) => `"${name}"`).join(", ");
+
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const caseId = searchParams.get("caseId") ?? undefined;
+  const serviceName = searchParams.get("service") ?? undefined;
   const { kibanaUrl } = getElasticConfig();
 
   try {
-    const where = caseId
-      ? `service.name == "${SERVICE_NAME}" AND labels.case_id == "${caseId.replace(/"/g, "")}"`
-      : `service.name == "${SERVICE_NAME}"`;
+    const parts = [`service.name IN (${FLEET})`];
+    if (caseId) parts.push(`labels.case_id == "${caseId.replace(/"/g, "")}"`);
+    if (serviceName) {
+      parts.push(`service.name == "${serviceName.replace(/"/g, "")}"`);
+    }
     const result = await esql(
       [
         "FROM logs-*",
-        `| WHERE ${where}`,
+        `| WHERE ${parts.join(" AND ")}`,
         "| SORT @timestamp DESC",
-        "| KEEP @timestamp, log.level, message, event.action, labels.case_id, labels.procedure, trace.id, event.duration",
+        "| KEEP @timestamp, log.level, message, event.action, service.name, labels.case_id, trace.id, event.duration",
         "| LIMIT 40",
       ].join(" "),
     );
@@ -38,8 +44,8 @@ export async function GET(request: Request) {
       level: String(row[1] ?? "info"),
       message: String(row[2] ?? ""),
       action: String(row[3] ?? ""),
-      caseId: String(row[4] ?? ""),
-      procedure: String(row[5] ?? ""),
+      serviceName: String(row[4] ?? ""),
+      caseId: String(row[5] ?? ""),
       traceId: String(row[6] ?? ""),
       durationNs: typeof row[7] === "number" ? row[7] : null,
     }));
@@ -52,6 +58,7 @@ export async function GET(request: Request) {
         ? buildDeepLinks(kibanaUrl, {
             caseId,
             traceId: rows[0]?.traceId,
+            serviceName: serviceName ?? rows[0]?.serviceName,
           })
         : null,
     });
@@ -69,7 +76,7 @@ export async function GET(request: Request) {
 export async function POST() {
   const { kibanaUrl } = getElasticConfig();
   try {
-    const events = buildHistoricalEvents(80);
+    const events = buildHistoricalEvents(96);
     const ingest = await ingestEvents(events);
     return NextResponse.json({
       ok: true,
