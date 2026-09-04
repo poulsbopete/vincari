@@ -3,7 +3,6 @@ import { getElasticConfig } from "@/lib/config";
 import { buildDeepLinks } from "@/lib/deep-links";
 import { ElasticError, esql } from "@/lib/elastic";
 import { HEALTHCARE_SERVICES } from "@/lib/solutions";
-import { emitApmTraffic } from "@/lib/apm-traffic";
 import { buildHistoricalEvents, ingestEvents } from "@/lib/telemetry";
 
 type LogRow = {
@@ -79,7 +78,6 @@ export async function POST() {
   try {
     const events = buildHistoricalEvents(96);
     const ingest = await ingestEvents(events);
-    void emitApmTraffic(4).catch(() => undefined);
     return NextResponse.json({
       ok: true,
       ...ingest,

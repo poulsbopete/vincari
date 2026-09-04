@@ -67,9 +67,58 @@ function attr(key: string, value: string | number) {
   return { key, value: { stringValue: value } };
 }
 
-function buildSpan(spec: SpanSpec, end: bigint, failed: boolean) {
+function specFromAction(service: string, action: string, durationMs: number): SpanSpec {
+  const catalog: Record<string, Omit<SpanSpec, "durationMs">> = {
+    "appointment.book": {
+      name: "POST /portal/appointments",
+      route: "/portal/appointments",
+      method: "POST",
+      child: { name: "GET fhir.Patient", peer: "vincari-fhir", durationMs: 40 },
+    },
+    "careplan.render": { name: "GET /portal/care-plan", route: "/portal/care-plan", method: "GET" },
+    "records.fetch": { name: "GET /portal/records", route: "/portal/records", method: "GET" },
+    "portal.login": { name: "GET /portal/login", route: "/portal/login", method: "GET" },
+    "telehealth.join": {
+      name: "POST /telehealth/join",
+      route: "/telehealth/join",
+      method: "POST",
+      child: { name: "POST teams.graph", peer: "microsoft-teams", durationMs: 420 },
+    },
+    "teams.graph": { name: "POST /telehealth/graph", route: "/telehealth/graph", method: "POST" },
+    "session.qos": { name: "GET /telehealth/qos", route: "/telehealth/qos", method: "GET" },
+    "visit.end": { name: "POST /telehealth/end", route: "/telehealth/end", method: "POST" },
+    "fhir.patient.read": { name: "GET /fhir/Patient", route: "/fhir/Patient", method: "GET" },
+    "fhir.encounter.search": { name: "GET /fhir/Encounter", route: "/fhir/Encounter", method: "GET" },
+    "fhir.bundle.assemble": { name: "POST /fhir/Bundle", route: "/fhir/Bundle", method: "POST" },
+    "ahds.export": { name: "POST /fhir/export", route: "/fhir/export", method: "POST" },
+    "case.opened": { name: "GET /capd/cases", route: "/capd/cases", method: "GET" },
+    "capd.suggest": { name: "POST /capd/suggest", route: "/capd/suggest", method: "POST" },
+    "ehr.pull": { name: "GET /capd/ehr", route: "/capd/ehr", method: "GET" },
+    "note.save": {
+      name: "POST /capd/notes",
+      route: "/capd/notes",
+      method: "POST",
+      child: { name: "GET fhir.Encounter", peer: "vincari-fhir", durationMs: 55 },
+    },
+    "note.signed": { name: "POST /capd/notes", route: "/capd/notes", method: "POST" },
+    "coding.score": { name: "POST /capd/coding", route: "/capd/coding", method: "POST" },
+    "gen_ai.note.draft": { name: "POST /gen_ai/note.draft", route: "/gen_ai/note.draft", method: "POST" },
+    "fabric.pipeline": { name: "POST /capd/fabric", route: "/capd/fabric", method: "POST" },
+  };
+  const mapped = catalog[action];
+  if (mapped) return { ...mapped, durationMs };
+  const method = action.includes("read") || action.includes("render") ? "GET" : "POST";
+  const route = `/${service.replace("vincari-", "")}/${action.replace(/\./g, "/")}`;
+  return { name: `${method} ${route}`, route, method, durationMs };
+}
+
+function buildSpan(
+  spec: SpanSpec,
+  end: bigint,
+  failed: boolean,
+  traceId = hexId(16),
+) {
   const start = end - BigInt(spec.durationMs) * NS_PER_MS;
-  const traceId = hexId(16);
   const spanId = hexId(8);
   const statusCode = failed ? 500 : 200;
   const httpAttrs = [
@@ -156,6 +205,34 @@ export function buildApmTracesPayload(copies = 1, endTimes?: bigint[]) {
     }
   }
   return { resourceSpans };
+}
+
+export type TraceFromLog = {
+  serviceName: string;
+  action: string;
+  durationMs: number;
+  traceId: string;
+  timestamp: string;
+  failed?: boolean;
+};
+
+export async function emitTracesForLogEvents(events: TraceFromLog[]) {
+  if (events.length === 0) return { ok: true, status: 204, spanBatches: 0 };
+  const resourceSpans = events.map((event) => {
+    const durationMs = Math.max(12, Math.round(event.durationMs));
+    const spec = specFromAction(event.serviceName, event.action, durationMs);
+    const end = BigInt(new Date(event.timestamp).getTime()) * NS_PER_MS || nowNano();
+    return {
+      resource: resourceFor(event.serviceName),
+      scopeSpans: [
+        {
+          scope: { name: "surgical-capd.demo", version: "1.0.0" },
+          spans: buildSpan(spec, end, Boolean(event.failed), event.traceId),
+        },
+      ],
+    };
+  });
+  return postOtlpJson("/v1/traces", { resourceSpans });
 }
 
 export async function emitApmTraffic(copies = 1) {

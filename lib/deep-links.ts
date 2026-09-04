@@ -109,7 +109,9 @@ export function kibanaTraceUrl(kibanaBase: string, traceId: string) {
   const base = kibanaBase.replace(/\/$/, "");
   const params = new URLSearchParams({
     kuery: `trace.id : "${traceId}"`,
-    rangeFrom: TIME.from,
+    comparisonEnabled: "false",
+    environment: "ENVIRONMENT_ALL",
+    rangeFrom: "now-7d",
     rangeTo: TIME.to,
   });
   return `${base}/app/apm/traces?${params.toString()}`;

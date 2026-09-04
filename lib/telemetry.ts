@@ -5,6 +5,7 @@ import {
   LOGS_DATA_STREAM,
   SERVICE_ENVIRONMENT,
 } from "./config";
+import { emitTracesForLogEvents } from "./apm-traffic";
 import { bulkIndex } from "./elastic";
 import type { CapabilityId } from "./solutions";
 
@@ -249,10 +250,21 @@ export function buildLiveEvent(input: {
 
 export async function ingestEvents(events: TelemetryEvent[]) {
   const result = await bulkIndex(LOGS_DATA_STREAM, events);
+  const traces = await emitTracesForLogEvents(
+    events.map((event) => ({
+      serviceName: event["service.name"],
+      action: event["event.action"],
+      durationMs: Math.round((event["event.duration"] ?? 50_000_000) / 1_000_000),
+      traceId: event["trace.id"],
+      timestamp: event["@timestamp"],
+      failed: event["log.level"] === "error",
+    })),
+  );
   return {
     ingested: events.length,
     errors: Boolean(result.errors),
     dataStream: LOGS_DATA_STREAM,
     sampleTraceId: events[0]?.["trace.id"],
+    tracesOk: traces.ok,
   };
 }
