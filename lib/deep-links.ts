@@ -155,15 +155,11 @@ export function kibanaNotesDiscoverUrl(
         "FROM surgical-capd-notes",
         `| WHERE \`case.id\` == "${caseId.replace(/"/g, "")}"`,
         "| SORT @timestamp DESC",
-        "| KEEP @timestamp, `case.id`, procedure, surgeon, `note.text`, `trace.id`",
         "| LIMIT 20",
       ].join(" ")
-    : [
-        "FROM surgical-capd-notes",
-        "| SORT @timestamp DESC",
-        "| KEEP @timestamp, `case.id`, procedure, surgeon, `note.text`",
-        "| LIMIT 20",
-      ].join(" ");
+    : ["FROM surgical-capd-notes", "| SORT @timestamp DESC", "| LIMIT 20"].join(
+        " ",
+      );
   return kibanaDiscoverUrl(notesKibanaBase, { query });
 }
 

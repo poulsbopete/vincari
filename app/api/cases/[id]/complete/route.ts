@@ -65,7 +65,7 @@ export async function POST(
             transactionId: ingest.sampleSpanId,
             transactionName: ingest.sampleTransactionName,
             serviceName: "vincari-capd",
-            notesKibanaUrl: notes.ok ? notesKibanaUrl : undefined,
+            notesKibanaUrl,
           })
         : null,
     });
