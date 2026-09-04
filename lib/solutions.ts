@@ -93,7 +93,7 @@ export const CAPABILITIES: Capability[] = [
       "Secure video consultations and telehealth visits (Microsoft Teams in Cloud for Healthcare).",
     href: "/telehealth",
     serviceName: "vincari-telehealth",
-    elasticProducts: ["Observability"],
+    elasticProducts: ["Observability", "Search", "Security"],
     elasticHow:
       "Treat the Teams/Graph join path as a distributed transaction: join latency, session setup errors, and QoS warnings land in logs and traces. Discover + APM show whether the visit failed in identity, Graph, or media.",
     signals: [
@@ -104,10 +104,22 @@ export const CAPABILITIES: Capability[] = [
     demoAction: "Start a Teams consult",
     layers: [
       {
+        product: "Search",
+        onScreen: "After-visit summary and wound-photo metadata lookup",
+        inElastic:
+          "The visit note is searchable in surgical-capd-notes instead of scraping Teams chat.",
+      },
+      {
         product: "Observability",
         onScreen: "Start visit writes the identity → Graph → media join path",
         inElastic:
           "Join latency, Graph errors, and QoS warnings land in the same APM trace family.",
+      },
+      {
+        product: "Security",
+        onScreen: "Who joined this consult, and from where",
+        inElastic:
+          "A non-clinical identity joining the same Teams meeting as Rivera is a SIEM finding.",
       },
     ],
   },
@@ -157,7 +169,7 @@ export const CAPABILITIES: Capability[] = [
       "Streamline clinical notes and tasks with Surgical CAPD, Dragon Copilot, and Microsoft Fabric.",
     href: "/or",
     serviceName: "vincari-capd",
-    elasticProducts: ["LLM observability", "Observability"],
+    elasticProducts: ["LLM observability", "Observability", "Search", "Security"],
     elasticHow:
       "LLM observability (EDOT / gen_ai spans) tracks note-draft tokens, model, and latency. CAPD suggestions, EHR pulls, and Fabric job completions are the same trace family in Serverless Observability.",
     signals: [
@@ -179,6 +191,18 @@ export const CAPABILITIES: Capability[] = [
         onScreen: "Sign & file writes logs plus the APM waterfall",
         inElastic:
           "CAPD suggestions, EHR pulls, and note.signed share one trace.id in Serverless Observability.",
+      },
+      {
+        product: "Search",
+        onScreen: "Signed operative notes are indexed for retrieval",
+        inElastic:
+          "Sign & file dual-writes note text to surgical-capd-notes on the AI Assistants search project.",
+      },
+      {
+        product: "Security",
+        onScreen: "Who is allowed to open this operative note",
+        inElastic:
+          "billing.svc reading the ACDF note is a detection, not a documentation timeout.",
       },
     ],
   },

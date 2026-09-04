@@ -2,6 +2,8 @@
 
 import { useMemo, useState } from "react";
 import { DeepLink } from "@/components/deep-link";
+import { ProductBand, ProductMark } from "@/components/product-mark";
+import { SecurityAccessLinks } from "@/components/security-access-links";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -16,6 +18,8 @@ import {
   STATUS_LABEL,
   type SurgicalCase,
 } from "@/lib/cases";
+import { DEFAULT_NOTES_KIBANA_URL } from "@/lib/config";
+import { kibanaNotesDiscoverUrl } from "@/lib/deep-links";
 
 type CompleteResponse = {
   ok?: boolean;
@@ -93,103 +97,121 @@ export function CapdWorkspace({ surgical }: { surgical: SurgicalCase }) {
           </div>
         </CardHeader>
         <CardContent className="space-y-3">
-          <Textarea
-            value={note}
-            onChange={(event) => setNote(event.target.value)}
-            className="min-h-[420px] font-mono text-[13px] leading-relaxed"
-          />
-          <div className="flex flex-wrap items-center justify-between gap-3">
-            <p className="text-xs text-muted-foreground">
-              Completeness {completeness}% · synthetic demo data only, no real PHI
-            </p>
-            <Button onClick={signAndFile} disabled={pending}>
-              {pending ? "Filing…" : "Sign & file"}
-            </Button>
-          </div>
-          {result ? (
-            <div className="rounded-lg border border-border bg-muted/40 p-3 text-sm">
-              {result.ok ? (
-                <div className="space-y-2">
-                  <p>
-                    Note filed. Trace{" "}
-                    <code className="font-mono text-xs">{result.traceId}</code>{" "}
-                    written to Elastic Observability
-                    {result.notes?.ok
-                      ? ", and the operative note was indexed for search on ai-assistants."
-                      : "."}
-                    {result.notes?.skipped ? (
-                      <span className="mt-1 block text-xs text-muted-foreground">
-                        Note search is not wired yet (set NOTES_API_KEY for the
-                        ai-assistants project).
-                      </span>
-                    ) : null}
-                  </p>
-                  <div className="flex flex-wrap gap-2">
-                    <DeepLink href={result.deepLinks?.discoverCase}>
-                      Case logs
-                    </DeepLink>
-                    <DeepLink href={result.deepLinks?.apmTrace}>
-                      APM waterfall
-                    </DeepLink>
-                    <DeepLink href={result.deepLinks?.discoverTrace}>
-                      Trace spans
-                    </DeepLink>
-                    <DeepLink href={result.deepLinks?.discoverLogs}>
-                      All CAPD logs
-                    </DeepLink>
-                    <DeepLink href={result.deepLinks?.notesSearch}>
-                      Search note
-                    </DeepLink>
-                  </div>
-                </div>
-              ) : (
-                <p className="text-destructive">{result.error}</p>
-              )}
+          <ProductBand
+            product="Observability"
+            title="Sign & file writes logs and an APM waterfall"
+          >
+            <Textarea
+              value={note}
+              onChange={(event) => setNote(event.target.value)}
+              className="min-h-[420px] font-mono text-[13px] leading-relaxed"
+            />
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <p className="text-xs text-muted-foreground">
+                Completeness {completeness}% · synthetic demo data only, no real PHI
+              </p>
+              <Button onClick={signAndFile} disabled={pending}>
+                {pending ? "Filing…" : "Sign & file"}
+              </Button>
             </div>
-          ) : null}
+            {result ? (
+              <div className="rounded-lg border border-border bg-muted/40 p-3 text-sm">
+                {result.ok ? (
+                  <div className="space-y-2">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <ProductMark product="Observability" />
+                      <p>
+                        Note filed. Trace{" "}
+                        <code className="font-mono text-xs">{result.traceId}</code>
+                      </p>
+                    </div>
+                    {result.notes?.ok ? (
+                      <p className="flex flex-wrap items-center gap-2 text-xs">
+                        <ProductMark product="Search" />
+                        Indexed to surgical-capd-notes on AI Assistants.
+                      </p>
+                    ) : null}
+                    <div className="flex flex-wrap gap-2">
+                      <DeepLink href={result.deepLinks?.discoverCase}>
+                        Case logs
+                      </DeepLink>
+                      <DeepLink href={result.deepLinks?.apmTrace}>
+                        APM waterfall
+                      </DeepLink>
+                      <DeepLink href={result.deepLinks?.discoverTrace}>
+                        Trace spans
+                      </DeepLink>
+                      <DeepLink href={result.deepLinks?.discoverLogs}>
+                        All CAPD logs
+                      </DeepLink>
+                      <DeepLink href={result.deepLinks?.notesSearch}>
+                        Search note
+                      </DeepLink>
+                    </div>
+                  </div>
+                ) : (
+                  <p className="text-destructive">{result.error}</p>
+                )}
+              </div>
+            ) : null}
+          </ProductBand>
         </CardContent>
       </Card>
       <div className="space-y-4">
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-base">CAPD findings</CardTitle>
-            <CardDescription>
-              Computer-assisted physician documentation checks before coding.
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            {surgical.suggestions.length === 0 ? (
-              <p className="text-sm text-muted-foreground">
-                No open gaps. This note is ready for the encoder.
-              </p>
-            ) : (
-              surgical.suggestions.map((item) => (
-                <div
-                  key={item.id}
-                  className="rounded-lg border border-border p-3"
-                >
-                  <div className="mb-1 flex items-center justify-between gap-2">
-                    <p className="text-sm font-medium">{item.title}</p>
-                    <Badge variant="outline" className="capitalize">
-                      {item.severity}
-                    </Badge>
-                  </div>
-                  <p className="mb-3 text-xs text-muted-foreground">
-                    {item.detail}
-                  </p>
-                  <Button
-                    size="sm"
-                    variant={accepted.includes(item.id) ? "secondary" : "default"}
-                    disabled={accepted.includes(item.id)}
-                    onClick={() => accept(item.id, item.insertText)}
+        <ProductBand product="LLM observability" title="CAPD findings">
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-base">Documentation gaps</CardTitle>
+              <CardDescription>
+                Computer-assisted physician documentation checks before coding.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              {surgical.suggestions.length === 0 ? (
+                <p className="text-sm text-muted-foreground">
+                  No open gaps. This note is ready for the encoder.
+                </p>
+              ) : (
+                surgical.suggestions.map((item) => (
+                  <div
+                    key={item.id}
+                    className="rounded-lg border border-border p-3"
                   >
-                    {accepted.includes(item.id) ? "Inserted" : "Insert language"}
-                  </Button>
-                </div>
-              ))
-            )}
-          </CardContent>
-        </Card>
+                    <div className="mb-1 flex items-center justify-between gap-2">
+                      <p className="text-sm font-medium">{item.title}</p>
+                      <Badge variant="outline" className="capitalize">
+                        {item.severity}
+                      </Badge>
+                    </div>
+                    <p className="mb-3 text-xs text-muted-foreground">
+                      {item.detail}
+                    </p>
+                    <Button
+                      size="sm"
+                      variant={accepted.includes(item.id) ? "secondary" : "default"}
+                      disabled={accepted.includes(item.id)}
+                      onClick={() => accept(item.id, item.insertText)}
+                    >
+                      {accepted.includes(item.id) ? "Inserted" : "Insert language"}
+                    </Button>
+                  </div>
+                ))
+              )}
+            </CardContent>
+          </Card>
+        </ProductBand>
+        <ProductBand product="Search" title="Retrieve this operative note">
+          <DeepLink href={kibanaNotesDiscoverUrl(DEFAULT_NOTES_KIBANA_URL, surgical.id)}>
+            Search this case
+          </DeepLink>
+        </ProductBand>
+        <ProductBand product="Security" title="Who can open this note">
+          <p className="text-xs">
+            Treating surgeon vs billing.svc bulk read of FHIR Patients and CAPD
+            notes.
+          </p>
+          <SecurityAccessLinks />
+        </ProductBand>
         <Card>
           <CardHeader>
             <CardTitle className="text-base">Case facts</CardTitle>

@@ -1,23 +1,17 @@
-import Link from "next/link";
 import { AppShell } from "@/components/app-shell";
 import { CapabilityAction } from "@/components/capability-action";
+import { CapabilityPills } from "@/components/capability-pills";
 import { DeepLink } from "@/components/deep-link";
 import { ElasticSolves } from "@/components/elastic-solves";
-import { ProductBand, ProductMark } from "@/components/product-mark";
+import { ProductBand } from "@/components/product-mark";
+import { SecurityAccessLinks } from "@/components/security-access-links";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import {
-  DEFAULT_NOTES_KIBANA_URL,
-  DEFAULT_SECURITY_KIBANA_URL,
-} from "@/lib/config";
-import {
-  kibanaNotesDiscoverUrl,
-  kibanaSecurityAlertsUrl,
-} from "@/lib/deep-links";
+import { DEFAULT_NOTES_KIBANA_URL } from "@/lib/config";
+import { kibanaNotesDiscoverUrl } from "@/lib/deep-links";
 import { capabilityById } from "@/lib/solutions";
 
 const capability = capabilityById("engagement")!;
 const notes = kibanaNotesDiscoverUrl(DEFAULT_NOTES_KIBANA_URL);
-const alerts = kibanaSecurityAlertsUrl(DEFAULT_SECURITY_KIBANA_URL);
 
 export default function EngagementPage() {
   return (
@@ -30,13 +24,7 @@ export default function EngagementPage() {
           Care plan and self-service portal
         </h1>
         <p className="text-sm text-muted-foreground">{capability.msSummary}</p>
-        <div className="flex flex-wrap gap-2">
-          {capability.elasticProducts.map((product) => (
-            <a key={product} href={`#${product.toLowerCase()}`}>
-              <ProductMark product={product} />
-            </a>
-          ))}
-        </div>
+        <CapabilityPills products={capability.elasticProducts} />
       </div>
       <div className="grid gap-4 lg:grid-cols-2">
         <Card>
@@ -72,15 +60,7 @@ export default function EngagementPage() {
                 walking every FHIR Patient is a detection problem, not a slow
                 page.
               </p>
-              <div className="flex flex-wrap gap-2">
-                <Link
-                  href="/security"
-                  className="inline-flex h-8 items-center rounded-lg border border-border bg-background px-3 text-xs font-medium text-foreground"
-                >
-                  Unusual EHR access
-                </Link>
-                <DeepLink href={alerts}>Security alerts</DeepLink>
-              </div>
+              <SecurityAccessLinks />
             </ProductBand>
           </CardContent>
         </Card>

@@ -10,7 +10,7 @@ export function ElasticSolves({ capability }: { capability: Capability }) {
       </CardHeader>
       <CardContent className="space-y-3">
         {capability.layers.map((layer) => (
-          <div key={layer.product} className="space-y-1">
+          <div key={`${layer.product}-${layer.onScreen}`} className="space-y-1">
             <ProductMark product={layer.product} />
             <p className="text-sm text-foreground">{layer.onScreen}</p>
             <p className="text-xs text-muted-foreground">{layer.inElastic}</p>
