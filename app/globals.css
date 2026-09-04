@@ -49,72 +49,73 @@
 }
 
 :root {
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --radius: 0.625rem;
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
+  /* Microsoft Cloud for Healthcare / Fluent: Communication Blue + clinical teal */
+  --background: #f3f9fb;
+  --foreground: #201f1e;
+  --card: #ffffff;
+  --card-foreground: #201f1e;
+  --popover: #ffffff;
+  --popover-foreground: #201f1e;
+  --primary: #0078d4;
+  --primary-foreground: #ffffff;
+  --secondary: #e6f2fb;
+  --secondary-foreground: #004578;
+  --muted: #e8f4f6;
+  --muted-foreground: #605e5c;
+  --accent: #00b7c3;
+  --accent-foreground: #00373a;
+  --destructive: #d13438;
+  --border: #cfe4ee;
+  --input: #cfe4ee;
+  --ring: #0078d4;
+  --chart-1: #0078d4;
+  --chart-2: #00b7c3;
+  --chart-3: #0f6cbd;
+  --chart-4: #107c10;
+  --chart-5: #ca5010;
+  --radius: 0.25rem;
+  --sidebar: #ffffff;
+  --sidebar-foreground: #201f1e;
+  --sidebar-primary: #0078d4;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #e6f2fb;
+  --sidebar-accent-foreground: #004578;
+  --sidebar-border: #cfe4ee;
+  --sidebar-ring: #0078d4;
 }
 
 .dark {
-  --background: oklch(0.16 0.02 220);
-  --foreground: oklch(0.96 0.01 180);
-  --card: oklch(0.21 0.02 220);
-  --card-foreground: oklch(0.96 0.01 180);
-  --popover: oklch(0.21 0.02 220);
-  --popover-foreground: oklch(0.96 0.01 180);
-  --primary: oklch(0.78 0.1 175);
-  --primary-foreground: oklch(0.18 0.03 220);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
+  --background: #0b1f33;
+  --foreground: #f3f9fb;
+  --card: #123047;
+  --card-foreground: #f3f9fb;
+  --popover: #123047;
+  --popover-foreground: #f3f9fb;
+  --primary: #3aa0ff;
+  --primary-foreground: #0b1f33;
+  --secondary: #1b3a52;
+  --secondary-foreground: #d7ecf7;
+  --muted: #1b3a52;
+  --muted-foreground: #9fc2d6;
+  --accent: #00b7c3;
+  --accent-foreground: #00373a;
+  --destructive: #f1707b;
+  --border: #2a5470;
+  --input: #2a5470;
+  --ring: #3aa0ff;
+  --chart-1: #3aa0ff;
+  --chart-2: #00b7c3;
+  --chart-3: #6cb8f6;
+  --chart-4: #9fd89f;
+  --chart-5: #efc4a0;
+  --sidebar: #123047;
+  --sidebar-foreground: #f3f9fb;
+  --sidebar-primary: #3aa0ff;
+  --sidebar-primary-foreground: #0b1f33;
+  --sidebar-accent: #1b3a52;
+  --sidebar-accent-foreground: #d7ecf7;
+  --sidebar-border: #2a5470;
+  --sidebar-ring: #3aa0ff;
 }
 
 @layer base {
@@ -126,5 +127,6 @@
   }
   html {
     @apply font-sans;
+    font-family: "Segoe UI", "Segoe UI Web (West European)", var(--font-geist-sans), system-ui, sans-serif;
   }
 }

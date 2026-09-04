@@ -5,7 +5,7 @@ export default function OrPage() {
   return (
     <AppShell eyebrow="AI Assistance · Dragon Copilot / Vincari CAPD · Elastic LLM observability">
       <div className="mb-6 space-y-2">
-        <p className="text-xs uppercase tracking-[0.18em] text-primary">
+        <p className="text-xs uppercase tracking-[0.18em] text-accent">
           AI Assistance
         </p>
         <h1 className="text-3xl font-semibold tracking-tight">

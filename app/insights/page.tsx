@@ -10,7 +10,7 @@ export default function InsightsPage() {
   return (
     <AppShell eyebrow="Clinical Insights · Azure Health Data Services · FHIR">
       <div className="mb-6 max-w-2xl space-y-2">
-        <p className="text-xs uppercase tracking-[0.18em] text-primary">
+        <p className="text-xs uppercase tracking-[0.18em] text-accent">
           Clinical Insights
         </p>
         <h1 className="text-3xl font-semibold tracking-tight">

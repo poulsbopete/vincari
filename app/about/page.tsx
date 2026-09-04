@@ -6,7 +6,7 @@ export default function AboutPage() {
     <AppShell>
       <div className="mx-auto max-w-3xl space-y-6">
         <div>
-          <p className="text-xs uppercase tracking-[0.18em] text-primary">
+          <p className="text-xs uppercase tracking-[0.18em] text-accent">
             Demo context
           </p>
           <h1 className="mt-2 text-3xl font-semibold tracking-tight">

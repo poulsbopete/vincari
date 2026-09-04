@@ -13,10 +13,10 @@ import {
 
 const TONE: Record<CaseStatus, string> = {
   "pre-op": "bg-muted text-muted-foreground",
-  "in-or": "bg-sky-500/15 text-sky-300",
-  documenting: "bg-amber-500/15 text-amber-300",
-  "coding-hold": "bg-orange-500/15 text-orange-300",
-  filed: "bg-emerald-500/15 text-emerald-300",
+  "in-or": "bg-[#e6f2fb] text-[#0078d4]",
+  documenting: "bg-[#fff4ce] text-[#8a6128]",
+  "coding-hold": "bg-[#fde7e9] text-[#a4262c]",
+  filed: "bg-[#dff6dd] text-[#107c10]",
 };
 
 export function OrBoard() {
@@ -55,12 +55,12 @@ export function OrBoard() {
                 </div>
               </div>
               {surgical.suggestions.length > 0 ? (
-                <p className="text-xs text-amber-300">
+                <p className="text-xs text-[#8a6128]">
                   {surgical.suggestions.length} documentation gap
                   {surgical.suggestions.length === 1 ? "" : "s"}
                 </p>
               ) : (
-                <p className="text-xs text-emerald-300">Ready to file</p>
+                <p className="text-xs text-[#107c10]">Ready to file</p>
               )}
             </CardContent>
           </Card>

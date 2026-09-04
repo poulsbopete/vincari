@@ -10,7 +10,7 @@ export default function EngagementPage() {
   return (
     <AppShell eyebrow="Patient Engagement · portal, care plans, booking">
       <div className="mb-6 max-w-2xl space-y-2">
-        <p className="text-xs uppercase tracking-[0.18em] text-primary">
+        <p className="text-xs uppercase tracking-[0.18em] text-accent">
           Patient Engagement
         </p>
         <h1 className="text-3xl font-semibold tracking-tight">

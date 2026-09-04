@@ -10,7 +10,7 @@ export default function TelehealthPage() {
   return (
     <AppShell eyebrow="Virtual Health · Microsoft Teams consult">
       <div className="mb-6 max-w-2xl space-y-2">
-        <p className="text-xs uppercase tracking-[0.18em] text-primary">
+        <p className="text-xs uppercase tracking-[0.18em] text-accent">
           Virtual Health
         </p>
         <h1 className="text-3xl font-semibold tracking-tight">
