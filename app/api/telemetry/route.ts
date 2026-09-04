@@ -4,6 +4,7 @@ import { getElasticConfig } from "@/lib/config";
 import { buildDeepLinks } from "@/lib/deep-links";
 import { ElasticError } from "@/lib/elastic";
 import { capabilityById, type CapabilityId } from "@/lib/solutions";
+import { emitApmTraffic } from "@/lib/apm-traffic";
 import { buildLiveEvent, ingestEvents } from "@/lib/telemetry";
 
 const LIVE: Record<
@@ -60,6 +61,7 @@ export async function POST(request: Request) {
   const { kibanaUrl } = getElasticConfig();
   try {
     await ingestEvents([event]);
+    void emitApmTraffic(1).catch(() => undefined);
     return NextResponse.json({
       ok: true,
       traceId: event["trace.id"],

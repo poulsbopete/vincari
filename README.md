@@ -19,6 +19,8 @@ Vega dashboard: https://otel-demo-a5630c.kb.us-east-1.aws.elastic.cloud/app/dash
 
 Specs live in `kibana/vega/`. Logs: `logs-vincari.healthcare-default`. Query `FROM logs-*`.
 
+APM traces for `vincari-portal`, `vincari-telehealth`, `vincari-fhir`, and `vincari-capd` are sent via OTLP on every demo action, every 45s while the app is open, and every minute from a Vercel cron (`/api/apm`).
+
 ## Other routes
 
 | Route | Purpose |

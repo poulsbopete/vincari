@@ -3,6 +3,7 @@ import { getCase } from "@/lib/cases";
 import { getElasticConfig } from "@/lib/config";
 import { buildDeepLinks } from "@/lib/deep-links";
 import { ElasticError } from "@/lib/elastic";
+import { emitApmTraffic } from "@/lib/apm-traffic";
 import { buildLiveEvent, ingestEvents } from "@/lib/telemetry";
 
 export async function POST(
@@ -36,6 +37,7 @@ export async function POST(
   });
   try {
     await ingestEvents([event]);
+    void emitApmTraffic(1).catch(() => undefined);
     return NextResponse.json({
       ok: true,
       traceId: event["trace.id"],
