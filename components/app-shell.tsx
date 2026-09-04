@@ -1,5 +1,10 @@
 import Link from "next/link";
-import { Activity, Stethoscope } from "lucide-react";
+import { Activity, LayoutDashboard, Stethoscope } from "lucide-react";
+import {
+  DEFAULT_KIBANA_URL,
+  SURGICAL_CAPD_DASHBOARD_ID,
+} from "@/lib/config";
+import { kibanaDashboardViewUrl } from "@/lib/deep-links";
 
 const NAV = [
   { href: "/", label: "Capabilities" },
@@ -7,6 +12,11 @@ const NAV = [
   { href: "/ops", label: "Observability" },
   { href: "/about", label: "Lineage" },
 ];
+
+const DASHBOARD_HREF = kibanaDashboardViewUrl(
+  DEFAULT_KIBANA_URL,
+  SURGICAL_CAPD_DASHBOARD_ID,
+);
 
 export function AppShell({
   children,
@@ -44,10 +54,19 @@ export function AppShell({
               </Link>
             ))}
             <a
-              href="https://otel-demo-a5630c.kb.us-east-1.aws.elastic.cloud/"
+              href={DASHBOARD_HREF}
               target="_blank"
               rel="noreferrer"
-              className="ml-2 inline-flex items-center gap-1.5 rounded-md border border-border px-2.5 py-1 text-xs text-primary hover:bg-muted"
+              className="ml-2 inline-flex items-center gap-1.5 rounded-md bg-primary px-2.5 py-1 text-xs text-primary-foreground hover:bg-primary/90"
+            >
+              <LayoutDashboard className="size-3.5" />
+              Vega dashboard
+            </a>
+            <a
+              href={DEFAULT_KIBANA_URL}
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex items-center gap-1.5 rounded-md border border-border px-2.5 py-1 text-xs text-primary hover:bg-muted"
             >
               <Activity className="size-3.5" />
               Kibana

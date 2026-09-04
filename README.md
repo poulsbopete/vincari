@@ -15,7 +15,9 @@ Not a Microsoft, Nuance, or Vincari product. Surgical CAPD is the current name f
 
 Kibana: https://otel-demo-a5630c.kb.us-east-1.aws.elastic.cloud/
 
-Logs: `logs-vincari.healthcare-default`. Query `FROM logs-*`.
+Vega dashboard: https://otel-demo-a5630c.kb.us-east-1.aws.elastic.cloud/app/dashboards#/view/36a7f722-bd87-4802-8a5d-b18d59c0275d?_g=(time:(from:now-24h,to:now))
+
+Specs live in `kibana/vega/`. Logs: `logs-vincari.healthcare-default`. Query `FROM logs-*`.
 
 ## Other routes
 

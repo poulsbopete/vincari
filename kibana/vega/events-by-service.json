@@ -1,0 +1,30 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v6.json",
+  "title": "Events by capability service",
+  "autosize": { "type": "fit", "contains": "padding" },
+  "config": {
+    "axis": { "domainColor": "#444", "tickColor": "#444" },
+    "view": { "stroke": null }
+  },
+  "data": {
+    "url": {
+      "%type%": "esql",
+      "%timefield%": "@timestamp",
+      "query": "FROM logs-* | WHERE service.name IN (\"vincari-portal\", \"vincari-telehealth\", \"vincari-fhir\", \"vincari-capd\") AND @timestamp >= ?_tstart AND @timestamp <= ?_tend | STATS events = COUNT(*) BY service.name | RENAME service.name AS service | SORT events DESC"
+    }
+  },
+  "mark": { "type": "bar", "color": "#0078D4" },
+  "encoding": {
+    "y": {
+      "field": "service",
+      "type": "nominal",
+      "sort": null,
+      "axis": { "title": null, "labelLimit": 180 }
+    },
+    "x": {
+      "field": "events",
+      "type": "quantitative",
+      "axis": { "title": null }
+    }
+  }
+}

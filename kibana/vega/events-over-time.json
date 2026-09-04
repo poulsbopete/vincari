@@ -1,0 +1,38 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v6.json",
+  "title": "Surgical CAPD fleet events over time",
+  "autosize": { "type": "fit", "contains": "padding" },
+  "config": {
+    "axis": { "domainColor": "#444", "tickColor": "#444", "labelAngle": 0 },
+    "view": { "stroke": null },
+    "legend": { "title": null }
+  },
+  "data": {
+    "url": {
+      "%type%": "esql",
+      "%timefield%": "@timestamp",
+      "query": "FROM logs-* | WHERE service.name IN (\"vincari-portal\", \"vincari-telehealth\", \"vincari-fhir\", \"vincari-capd\") AND @timestamp >= ?_tstart AND @timestamp <= ?_tend | STATS events = COUNT(*) BY bucket = BUCKET(@timestamp, 75, ?_tstart, ?_tend), service.name | RENAME service.name AS service"
+    }
+  },
+  "mark": { "type": "line", "strokeWidth": 2 },
+  "encoding": {
+    "x": {
+      "field": "bucket",
+      "type": "temporal",
+      "axis": { "title": null, "labelAngle": 0, "tickCount": 8 }
+    },
+    "y": {
+      "field": "events",
+      "type": "quantitative",
+      "axis": { "title": null }
+    },
+    "color": {
+      "field": "service",
+      "type": "nominal",
+      "scale": {
+        "domain": ["vincari-portal", "vincari-telehealth", "vincari-fhir", "vincari-capd"],
+        "range": ["#0078D4", "#00B7C3", "#0F6CBD", "#107C10"]
+      }
+    }
+  }
+}

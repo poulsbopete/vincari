@@ -1,0 +1,30 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v6.json",
+  "title": "P95 latency by workflow action",
+  "autosize": { "type": "fit", "contains": "padding" },
+  "config": {
+    "axis": { "domainColor": "#444", "tickColor": "#444" },
+    "view": { "stroke": null }
+  },
+  "data": {
+    "url": {
+      "%type%": "esql",
+      "%timefield%": "@timestamp",
+      "query": "FROM logs-* | WHERE service.name IN (\"vincari-portal\", \"vincari-telehealth\", \"vincari-fhir\", \"vincari-capd\") AND event.duration IS NOT NULL AND @timestamp >= ?_tstart AND @timestamp <= ?_tend | STATS p95_ns = PERCENTILE(event.duration, 95) BY event.action | EVAL p95_ms = p95_ns / 1000000 | RENAME event.action AS action | SORT p95_ms DESC | LIMIT 12"
+    }
+  },
+  "mark": { "type": "bar", "color": "#00B7C3" },
+  "encoding": {
+    "y": {
+      "field": "action",
+      "type": "nominal",
+      "sort": null,
+      "axis": { "title": null, "labelLimit": 180 }
+    },
+    "x": {
+      "field": "p95_ms",
+      "type": "quantitative",
+      "axis": { "title": null }
+    }
+  }
+}

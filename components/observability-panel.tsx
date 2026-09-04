@@ -30,6 +30,7 @@ type DeepLinks = {
   streams?: string | null;
   dashboards?: string | null;
   slos?: string | null;
+  vegaDashboard?: string | null;
 };
 
 type EventRow = {
@@ -160,6 +161,9 @@ export function ObservabilityPanel() {
             <CardTitle className="text-base">Kibana</CardTitle>
           </CardHeader>
           <CardContent className="flex flex-wrap gap-2">
+            <DeepLink href={links?.vegaDashboard} className="border-primary text-primary">
+              Vega dashboard
+            </DeepLink>
             <DeepLink href={links?.discoverLogs}>Discover logs</DeepLink>
             <DeepLink href={links?.discoverErrors}>Errors</DeepLink>
             <DeepLink href={links?.discoverLatency}>Latency</DeepLink>

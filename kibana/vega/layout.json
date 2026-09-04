@@ -1,0 +1,39 @@
+{
+  "title": "Surgical CAPD — Observability",
+  "description": "Vega-Lite ES|QL dashboard for Surgical CAPD healthcare services on otel-demo.",
+  "dashboardId": "36a7f722-bd87-4802-8a5d-b18d59c0275d",
+  "panels": [
+    {
+      "visualization": "c01c5505-06db-4847-bb2d-528212f8ac05",
+      "file": "events-by-service.json",
+      "x": 0,
+      "y": 0,
+      "w": 24,
+      "h": 10
+    },
+    {
+      "visualization": "07d565d2-6a32-4a78-ae89-be964b588aea",
+      "file": "errors-by-service.json",
+      "x": 24,
+      "y": 0,
+      "w": 24,
+      "h": 10
+    },
+    {
+      "visualization": "ade4b9ae-3499-4e96-8704-150c9f4d5a0a",
+      "file": "events-over-time.json",
+      "x": 0,
+      "y": 10,
+      "w": 48,
+      "h": 12
+    },
+    {
+      "visualization": "3c37b707-2a33-441b-92aa-78fa9869cfd2",
+      "file": "latency-by-action.json",
+      "x": 0,
+      "y": 22,
+      "w": 48,
+      "h": 12
+    }
+  ]
+}

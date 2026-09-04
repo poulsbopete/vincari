@@ -1,0 +1,39 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v6.json",
+  "title": "Warnings and errors by service",
+  "autosize": { "type": "fit", "contains": "padding" },
+  "config": {
+    "axis": { "domainColor": "#444", "tickColor": "#444" },
+    "view": { "stroke": null },
+    "legend": { "title": null }
+  },
+  "data": {
+    "url": {
+      "%type%": "esql",
+      "%timefield%": "@timestamp",
+      "query": "FROM logs-* | WHERE service.name IN (\"vincari-portal\", \"vincari-telehealth\", \"vincari-fhir\", \"vincari-capd\") AND log.level IN (\"error\", \"warn\") AND @timestamp >= ?_tstart AND @timestamp <= ?_tend | STATS events = COUNT(*) BY service.name, log.level | RENAME service.name AS service, log.level AS level | SORT events DESC"
+    }
+  },
+  "mark": { "type": "bar" },
+  "encoding": {
+    "y": {
+      "field": "service",
+      "type": "nominal",
+      "sort": null,
+      "axis": { "title": null, "labelLimit": 180 }
+    },
+    "x": {
+      "field": "events",
+      "type": "quantitative",
+      "axis": { "title": null }
+    },
+    "color": {
+      "field": "level",
+      "type": "nominal",
+      "scale": {
+        "domain": ["warn", "error"],
+        "range": ["#CA5010", "#D13438"]
+      }
+    }
+  }
+}

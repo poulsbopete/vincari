@@ -8,6 +8,8 @@ export const DEFAULT_KIBANA_URL =
   "https://otel-demo-a5630c.kb.us-east-1.aws.elastic.cloud";
 export const DEFAULT_ES_URL =
   "https://otel-demo-a5630c.es.us-east-1.aws.elastic.cloud";
+export const SURGICAL_CAPD_DASHBOARD_ID =
+  "36a7f722-bd87-4802-8a5d-b18d59c0275d";
 
 export function getElasticConfig() {
   const esUrl = (

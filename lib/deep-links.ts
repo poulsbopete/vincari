@@ -1,3 +1,5 @@
+import { SURGICAL_CAPD_DASHBOARD_ID } from "./config";
+
 const TIME = { from: "now-24h", to: "now" };
 
 function risonQuote(str: string) {
@@ -131,7 +133,7 @@ export function kibanaDashboardViewUrl(kibanaBase: string, dashboardId: string) 
 
 export function buildDeepLinks(
   kibanaUrl: string,
-  extras: { traceId?: string; caseId?: string; serviceName?: string } = {},
+  extras: { traceId?: string; caseId?: string; serviceName?: string; dashboardId?: string } = {},
 ) {
   const service = extras.serviceName ?? "vincari-capd";
   const caseQuery = extras.caseId
@@ -158,5 +160,9 @@ export function buildDeepLinks(
     streams: kibanaStreamsUrl(kibanaUrl),
     dashboards: kibanaDashboardsUrl(kibanaUrl),
     slos: kibanaSloUrl(kibanaUrl),
+    vegaDashboard: kibanaDashboardViewUrl(
+      kibanaUrl,
+      extras.dashboardId || SURGICAL_CAPD_DASHBOARD_ID,
+    ),
   };
 }
