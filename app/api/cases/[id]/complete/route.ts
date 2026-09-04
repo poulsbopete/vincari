@@ -39,7 +39,7 @@ export async function POST(
     findings: body.findings ?? surgical.suggestions.length,
   });
   try {
-    await ingestEvents([event]);
+    const ingest = await ingestEvents([event]);
     let notes: Awaited<ReturnType<typeof indexSignedNote>> | { ok: false; skipped: true; reason: string } =
       { ok: false, skipped: true, reason: "NOTES_API_KEY is not set" };
     if (isNotesConfigured()) {
@@ -62,6 +62,9 @@ export async function POST(
         ? buildDeepLinks(kibanaUrl, {
             caseId: surgical.id,
             traceId: event["trace.id"],
+            transactionId: ingest.sampleSpanId,
+            transactionName: ingest.sampleTransactionName,
+            serviceName: "vincari-capd",
             notesKibanaUrl: notes.ok ? notesKibanaUrl : undefined,
           })
         : null,

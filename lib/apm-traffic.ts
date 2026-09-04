@@ -100,7 +100,12 @@ function specFromAction(service: string, action: string, durationMs: number): Sp
       method: "POST",
       child: { name: "GET fhir.Encounter", peer: "vincari-fhir", durationMs: 55 },
     },
-    "note.signed": { name: "POST /capd/notes", route: "/capd/notes", method: "POST" },
+    "note.signed": {
+      name: "POST /capd/notes",
+      route: "/capd/notes",
+      method: "POST",
+      child: { name: "GET fhir.Encounter", peer: "vincari-fhir", durationMs: 55 },
+    },
     "coding.score": { name: "POST /capd/coding", route: "/capd/coding", method: "POST" },
     "gen_ai.note.draft": { name: "POST /gen_ai/note.draft", route: "/gen_ai/note.draft", method: "POST" },
     "fabric.pipeline": { name: "POST /capd/fabric", route: "/capd/fabric", method: "POST" },
@@ -165,7 +170,7 @@ function buildSpan(
       status: { code: 1 },
     });
   }
-  return spans;
+  return { spans, spanId, traceId };
 }
 
 function resourceFor(service: string) {
@@ -252,7 +257,7 @@ export function buildApmTracesPayload(copies = 1, endTimes?: bigint[]) {
             scopeSpans: [
               {
                 scope: { name: "surgical-capd.demo", version: "1.0.0" },
-                spans: buildSpan(spec, tick, failed),
+                spans: buildSpan(spec, tick, failed).spans,
               },
             ],
           });
@@ -273,22 +278,35 @@ export type TraceFromLog = {
 };
 
 export async function emitTracesForLogEvents(events: TraceFromLog[]) {
-  if (events.length === 0) return { ok: true, status: 204, spanBatches: 0 };
-  const resourceSpans = events.map((event) => {
+  if (events.length === 0) return { ok: true, status: 204, spanBatches: 0, sampleSpanId: "" };
+  const built = events.map((event) => {
     const durationMs = Math.max(12, Math.round(event.durationMs));
     const spec = specFromAction(event.serviceName, event.action, durationMs);
     const end = BigInt(new Date(event.timestamp).getTime()) * NS_PER_MS || nowNano();
+    const span = buildSpan(spec, end, Boolean(event.failed), event.traceId);
     return {
-      resource: resourceFor(event.serviceName),
-      scopeSpans: [
-        {
-          scope: { name: "surgical-capd.demo", version: "1.0.0" },
-          spans: buildSpan(spec, end, Boolean(event.failed), event.traceId),
-        },
-      ],
+      spec,
+      spanId: span.spanId,
+      resourceSpans: {
+        resource: resourceFor(event.serviceName),
+        scopeSpans: [
+          {
+            scope: { name: "surgical-capd.demo", version: "1.0.0" },
+            spans: span.spans,
+          },
+        ],
+      },
     };
   });
-  return postOtlpJson("/v1/traces", { resourceSpans });
+  const sent = await postOtlpJson("/v1/traces", {
+    resourceSpans: built.map((item) => item.resourceSpans),
+  });
+  return {
+    ...sent,
+    spanBatches: built.length,
+    sampleSpanId: built[0]?.spanId ?? "",
+    sampleTransactionName: built[0]?.spec.name ?? "",
+  };
 }
 
 export async function emitApmRuntimeMetrics(hours = 12, everyMinutes = 2) {

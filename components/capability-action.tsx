@@ -12,6 +12,7 @@ type Result = {
   serviceName?: string;
   deepLinks?: {
     discoverCase?: string | null;
+    apmTrace?: string | null;
     apmService?: string | null;
     discoverLogs?: string | null;
     slos?: string | null;
@@ -60,6 +61,9 @@ export function CapabilityAction({ capability }: { capability: Capability }) {
               <div className="flex flex-wrap gap-2">
                 <DeepLink href={result.deepLinks?.discoverCase}>
                   Case logs
+                </DeepLink>
+                <DeepLink href={result.deepLinks?.apmTrace}>
+                  APM waterfall
                 </DeepLink>
                 <DeepLink href={result.deepLinks?.apmService}>
                   APM service

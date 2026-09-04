@@ -6,7 +6,7 @@ import {
   SERVICE_ENVIRONMENT,
 } from "./config";
 import { emitTracesForLogEvents } from "./apm-traffic";
-import { bulkIndex } from "./elastic";
+import { bulkIndex, ElasticError } from "./elastic";
 import type { CapabilityId } from "./solutions";
 
 function hexId(bytes: number) {
@@ -260,11 +260,20 @@ export async function ingestEvents(events: TelemetryEvent[]) {
       failed: event["log.level"] === "error",
     })),
   );
+  if (!traces.ok) {
+    throw new ElasticError(
+      `OTLP traces failed (${traces.status})`,
+      traces.status,
+      traces.body,
+    );
+  }
   return {
     ingested: events.length,
     errors: Boolean(result.errors),
     dataStream: LOGS_DATA_STREAM,
     sampleTraceId: events[0]?.["trace.id"],
+    sampleSpanId: traces.sampleSpanId,
+    sampleTransactionName: traces.sampleTransactionName,
     tracesOk: traces.ok,
   };
 }

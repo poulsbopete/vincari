@@ -105,16 +105,45 @@ export function kibanaApmServiceUrl(
   return `${base}/app/apm/services/${encodeURIComponent(serviceName)}/overview?${params.toString()}`;
 }
 
-export function kibanaTraceUrl(kibanaBase: string, traceId: string) {
+export function kibanaTraceUrl(
+  kibanaBase: string,
+  traceId: string,
+  extras: {
+    serviceName?: string;
+    transactionId?: string;
+    transactionName?: string;
+  } = {},
+) {
   const base = kibanaBase.replace(/\/$/, "");
-  const params = new URLSearchParams({
-    kuery: `trace.id : "${traceId}"`,
-    comparisonEnabled: "false",
-    environment: "ENVIRONMENT_ALL",
-    rangeFrom: "now-7d",
-    rangeTo: TIME.to,
+  const range = { rangeFrom: "now-7d", rangeTo: TIME.to };
+  if (extras.serviceName && extras.transactionId) {
+    const params = new URLSearchParams({
+      ...range,
+      comparisonEnabled: "false",
+      environment: "ENVIRONMENT_ALL",
+      traceId,
+      transactionId: extras.transactionId,
+      transactionName: extras.transactionName || "request",
+      transactionType: "request",
+    });
+    return `${base}/app/apm/services/${encodeURIComponent(extras.serviceName)}/transactions/view?${params.toString()}`;
+  }
+  const params = new URLSearchParams(range);
+  return `${base}/app/apm/link-to/trace/${encodeURIComponent(traceId)}?${params.toString()}`;
+}
+
+export function kibanaTracesDiscoverUrl(kibanaBase: string, traceId: string) {
+  const safe = traceId.replace(/"/g, "");
+  return kibanaDiscoverUrl(kibanaBase, {
+    query: [
+      "FROM traces-*",
+      `| WHERE trace_id == "${safe}"`,
+      "| SORT @timestamp DESC",
+      "| LIMIT 20",
+    ].join(" "),
+    timeFrom: "now-7d",
+    timeTo: TIME.to,
   });
-  return `${base}/app/apm/traces?${params.toString()}`;
 }
 
 export function kibanaNotesDiscoverUrl(
@@ -188,6 +217,8 @@ export function buildDeepLinks(
   kibanaUrl: string,
   extras: {
     traceId?: string;
+    transactionId?: string;
+    transactionName?: string;
     caseId?: string;
     serviceName?: string;
     dashboardId?: string;
@@ -214,8 +245,15 @@ export function buildDeepLinks(
     apmServices: kibanaApmServicesUrl(kibanaUrl),
     apmService: kibanaApmServiceUrl(kibanaUrl, service),
     apmTrace: extras.traceId
-      ? kibanaTraceUrl(kibanaUrl, extras.traceId)
+      ? kibanaTraceUrl(kibanaUrl, extras.traceId, {
+          serviceName: extras.serviceName,
+          transactionId: extras.transactionId,
+          transactionName: extras.transactionName,
+        })
       : kibanaApmServicesUrl(kibanaUrl),
+    discoverTrace: extras.traceId
+      ? kibanaTracesDiscoverUrl(kibanaUrl, extras.traceId)
+      : null,
     streams: kibanaStreamsUrl(kibanaUrl),
     dashboards: kibanaDashboardsUrl(kibanaUrl),
     slos: kibanaSloUrl(kibanaUrl),

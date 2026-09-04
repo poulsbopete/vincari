@@ -24,6 +24,7 @@ type CompleteResponse = {
   deepLinks?: {
     discoverCase?: string | null;
     apmTrace?: string | null;
+    discoverTrace?: string | null;
     discoverLogs?: string | null;
     notesSearch?: string | null;
   } | null;
@@ -128,7 +129,10 @@ export function CapdWorkspace({ surgical }: { surgical: SurgicalCase }) {
                       Case logs
                     </DeepLink>
                     <DeepLink href={result.deepLinks?.apmTrace}>
-                      APM traces
+                      APM waterfall
+                    </DeepLink>
+                    <DeepLink href={result.deepLinks?.discoverTrace}>
+                      Trace spans
                     </DeepLink>
                     <DeepLink href={result.deepLinks?.discoverLogs}>
                       All CAPD logs

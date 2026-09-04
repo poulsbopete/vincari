@@ -82,7 +82,12 @@ export async function POST() {
       ok: true,
       ...ingest,
       deepLinks: kibanaUrl
-        ? buildDeepLinks(kibanaUrl, { traceId: ingest.sampleTraceId })
+        ? buildDeepLinks(kibanaUrl, {
+            traceId: ingest.sampleTraceId,
+            transactionId: ingest.sampleSpanId,
+            transactionName: ingest.sampleTransactionName,
+            serviceName: events[0]?.["service.name"],
+          })
         : null,
     });
   } catch (error) {

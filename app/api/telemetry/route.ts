@@ -59,7 +59,7 @@ export async function POST(request: Request) {
   });
   const { kibanaUrl } = getElasticConfig();
   try {
-    await ingestEvents([event]);
+    const ingest = await ingestEvents([event]);
     return NextResponse.json({
       ok: true,
       traceId: event["trace.id"],
@@ -69,6 +69,8 @@ export async function POST(request: Request) {
         ? buildDeepLinks(kibanaUrl, {
             caseId: surgical?.id,
             traceId: event["trace.id"],
+            transactionId: ingest.sampleSpanId,
+            transactionName: ingest.sampleTransactionName,
             serviceName: capability.serviceName,
           })
         : null,
