@@ -18,9 +18,10 @@ export function AppShell({
 }) {
   return (
     <div className="flex min-h-full flex-col bg-background text-foreground">
-      <div className="h-1 w-full bg-gradient-to-r from-[#0078D4] via-[#00BCF2] to-[#00B7C3]" />
-      <header className="border-b border-border bg-card shadow-[0_1px_2px_rgba(0,0,0,0.06)]">
-        <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-3">
+      <div className="sticky top-0 z-50 border-b border-border bg-card/95 shadow-[0_1px_2px_rgba(0,0,0,0.06)] backdrop-blur">
+        <div className="h-1 w-full bg-gradient-to-r from-[#0078D4] via-[#00BCF2] to-[#00B7C3]" />
+        <header>
+          <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-3">
           <Link href="/" className="flex items-center gap-2.5">
             <span className="flex size-8 items-center justify-center rounded-sm bg-primary text-primary-foreground">
               <Stethoscope className="size-4" />
@@ -51,7 +52,8 @@ export function AppShell({
             {eyebrow}
           </div>
         ) : null}
-      </header>
+        </header>
+      </div>
       <main className="mx-auto w-full max-w-7xl flex-1 px-4 py-6">{children}</main>
     </div>
   );
